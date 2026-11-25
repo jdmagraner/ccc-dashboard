@@ -1,0 +1,1661 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="data:," />
+    <title>CCC Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Manrope:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+    <style>
+      button, [role="button"], select, summary, input:not([type="checkbox"], [type="radio"]) { min-height: 2rem; }
+      * { box-sizing: border-box; }
+      :root {
+        --bg: #0b0d10; --bg-2: #101318; --panel: #161a21; --panel-2: #1c212b;
+        --hero-bg: #04060a; --hero-muted: #aca491;
+        --ink: #f4f0e6; --ink-2: #c8c1b0; --muted: #918b7c;
+        --line: #262c38; --line-soft: #1f242e;
+        --gold: #e9a83c; --gold-soft: rgba(233,168,60,.13);
+        --red: #e0523d; --red-soft: rgba(224,82,61,.12);
+        --green: #57b877; --green-soft: rgba(87,184,119,.12);
+        --blue: #5ea8d3; --blue-soft: rgba(94,168,211,.12);
+        --teal: #35b8a6; --teal-soft: rgba(53,184,166,.12);
+        --coral: #e07856; --coral-soft: rgba(224,120,86,.12);
+        --shadow: 0 10px 30px rgba(0,0,0,.28), 0 2px 8px rgba(0,0,0,.22);
+        --shadow-sm: 0 4px 16px rgba(0,0,0,.20);
+        --radius: 18px; color-scheme: dark;
+      }
+      @media (prefers-color-scheme: light) {
+        :root {
+          --bg: #eef0f2; --bg-2: #e6e9ec; --panel: #ffffff; --panel-2: #f4f5f3;
+          --hero-bg: #d3dae1; --hero-muted: #5d574a;
+          --ink: #1c1a15; --ink-2: #4c463a; --muted: #7d7666;
+          --line: #dde0e2; --line-soft: #e8eaea;
+          --gold: #9c6608; --gold-soft: rgba(156,102,8,.10);
+          --red: #b23a28; --red-soft: rgba(178,58,40,.09);
+          --green: #2e7d4b; --green-soft: rgba(46,125,75,.10);
+          --blue: #2f6f9e; --blue-soft: rgba(47,111,158,.10);
+          --teal: #177a6c; --teal-soft: rgba(23,122,108,.10);
+          --coral: #b5502f; --coral-soft: rgba(181,80,47,.10);
+          --shadow: 0 10px 28px rgba(31,35,40,.10), 0 2px 8px rgba(31,35,40,.06);
+          --shadow-sm: 0 4px 14px rgba(31,35,40,.08);
+          color-scheme: light;
+        }
+      }
+      html { scroll-behavior: smooth; }
+      body { margin: 0; background: var(--bg); color: var(--ink); font-family: "Manrope", system-ui, sans-serif; font-size: 16px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+      .wrap { max-width: 1180px; margin: 0 auto; padding: 0 20px 72px; }
+      h1, h2, h3 { font-family: "Sora", sans-serif; margin: 0; letter-spacing: -.01em; }
+      .mono { font-family: "IBM Plex Mono", monospace; }
+      a { color: var(--gold); }
+      :focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; border-radius: 6px; }
+
+      /* ---------- Header ---------- */
+      header.top { background: var(--hero-bg); border-bottom: 1px solid var(--line-soft); overflow: hidden; position: relative; }
+      .top-inner { max-width: 1180px; margin: 0 auto; padding: 26px 20px 20px; position: relative; }
+      .brand-row { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px; }
+      .brand h1 { font-size: clamp(28px, 4.4vw, 40px); font-weight: 800; line-height: 1.05; }
+      .brand h1 .crew { color: var(--gold); }
+      .brand .tagline { margin-top: 6px; color: var(--ink-2); font-size: 15px; max-width: 560px; }
+      .brand .tagline strong { color: var(--ink); }
+      .daily-line { margin-top: 8px; font-family: "IBM Plex Mono", monospace; font-size: 12.5px; letter-spacing: .04em; color: var(--gold); }
+      .clockbox { text-align: right; border: 1px solid var(--line); background: var(--panel); border-radius: 14px; padding: 10px 16px; min-width: 200px; box-shadow: var(--shadow-sm); }
+      .clockbox .clock { font-family: "IBM Plex Mono", monospace; font-size: 22px; font-weight: 600; }
+      .clockbox .clock small { font-size: 11.5px; color: var(--muted); }
+      .clockbox .date { color: var(--muted); font-size: 12.5px; margin-top: 1px; }
+      .statusline { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+      .quicklinks { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+      .qlink { display: inline-flex; align-items: center; justify-content: center; width: 42px; height: 42px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); text-decoration: none; box-shadow: var(--shadow-sm); }
+      .qlink svg { width: 23px; height: 23px; flex: none; display: block; }
+      .qlink:hover, .qlink:focus-visible { border-color: var(--gold); }
+      .pill { display: inline-flex; align-items: center; gap: 7px; border: 1px solid var(--line); border-radius: 999px; padding: 5px 12px; font-size: 12.5px; color: var(--ink-2); background: var(--panel); }
+      .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); flex: none; display: inline-block; }
+      .dot.gold { background: var(--gold); } .dot.red { background: var(--red); }
+      .top-bar { height: 4px; background: linear-gradient(90deg, var(--gold) 0 50%, var(--red) 50% 100%); }
+      .brand-lockup { display: flex; gap: 14px; align-items: flex-start; }
+      .brand-emblem { width: 52px; height: 52px; flex: none; border-radius: 50%; border: 1.5px solid var(--line); background: #0b0c0f; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-top: 2px; }
+      .brand-emblem img { width: 100%; height: 100%; object-fit: cover; display: block; }
+      .ticker { overflow: hidden; border-bottom: 1px solid var(--line); background: var(--hero-bg); box-shadow: 0 8px 20px rgba(0,0,0,.16); position: relative; }
+      .ticker-track { display: flex; width: max-content; animation: tickmove 36s linear infinite; padding: 7px 0; }
+      .ticker-track span { font-family: "IBM Plex Mono", monospace; font-size: 11.5px; letter-spacing: .13em; text-transform: uppercase; color: var(--hero-muted); padding: 0 18px; white-space: nowrap; }
+      .ticker-track span b { color: var(--gold); font-weight: 600; }
+      .ticker-track span i { color: var(--red); font-style: normal; }
+      @keyframes tickmove { to { transform: translateX(-50%); } }
+
+      /* ---------- Tab bar (floating) ---------- */
+      .tabbar { position: sticky; top: 12px; z-index: 30; max-width: 1180px; margin: 16px auto 0; padding: 0 20px; }
+      .tabbar-inner { display: flex; flex-wrap: wrap; gap: 8px; background: transparent; border: none; border-radius: 999px; padding: 8px; box-shadow: none; }
+      .tabbtn { appearance: none; border: 1px solid var(--line); background: var(--panel-2); color: var(--ink-2); font: inherit; font-weight: 700; font-size: 14px; padding: 9px 16px; border-radius: 999px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; box-shadow: inset 0 1px 0 rgba(255,255,255,.07), inset 0 -2px 0 rgba(0,0,0,.14), 0 2px 6px rgba(0,0,0,.18); transition: transform .15s ease, box-shadow .15s ease, background .15s ease, border-color .15s ease, color .15s ease; -webkit-tap-highlight-color: transparent; touch-action: manipulation; user-select: none; }
+      .tabbtn .tdot { width: 9px; height: 9px; border-radius: 50%; background: var(--tc, var(--gold)); flex: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--tc, var(--gold)) 18%, transparent); }
+      .tabbtn:hover { color: var(--ink); border-color: color-mix(in srgb, var(--tc, var(--gold)) 55%, var(--line)); background: color-mix(in srgb, var(--panel-2) 78%, var(--tc, var(--gold)) 22%); transform: translateY(-1px); box-shadow: inset 0 1px 0 rgba(255,255,255,.08), inset 0 -2px 0 rgba(0,0,0,.12), 0 6px 14px rgba(0,0,0,.22); }
+      .tabbtn:active { transform: translateY(1px) scale(.98); box-shadow: inset 0 2px 6px rgba(0,0,0,.22), 0 1px 3px rgba(0,0,0,.18); }
+      .tabbtn:focus-visible { outline: 2px solid var(--tc, var(--gold)); outline-offset: 2px; }
+      .tabbtn[aria-selected="true"] { background: var(--tc, var(--gold)); color: #161310; border-color: color-mix(in srgb, var(--tc, var(--gold)) 72%, #000 28%); font-weight: 800; box-shadow: inset 0 1px 0 rgba(255,255,255,.35), inset 0 -2px 0 rgba(0,0,0,.18), 0 6px 16px color-mix(in srgb, var(--tc, var(--gold)) 38%, transparent); }
+      .tabbtn[aria-selected="true"] .tdot { background: #161310; opacity: .55; box-shadow: none; }
+      .tabbtn[aria-selected="true"]:hover { background: var(--tc, var(--gold)); color: #161310; transform: translateY(-1px); }
+      .tabbtn[aria-selected="true"]:active { transform: translateY(1px) scale(.98); }
+      @media (prefers-color-scheme: light) {
+        .tabbtn { box-shadow: inset 0 1px 0 rgba(255,255,255,.9), inset 0 -2px 0 rgba(31,35,40,.06), 0 2px 6px rgba(31,35,40,.10); }
+        .tabbtn:hover { box-shadow: inset 0 1px 0 rgba(255,255,255,.9), inset 0 -2px 0 rgba(31,35,40,.05), 0 6px 14px rgba(31,35,40,.13); }
+        .tabbtn[aria-selected="true"] { color: #fff; box-shadow: inset 0 1px 0 rgba(255,255,255,.28), inset 0 -2px 0 rgba(0,0,0,.16), 0 6px 16px color-mix(in srgb, var(--tc, var(--gold)) 32%, transparent); }
+        .tabbtn[aria-selected="true"] .tdot { background: #fff; }
+        .tabbtn[aria-selected="true"]:hover { color: #fff; }
+      }
+
+      /* ---------- Panels & section tones ---------- */
+      .tab-panel { display: none; --tone: var(--gold); --tone-soft: var(--gold-soft); }
+      .tab-panel.active { display: block; animation: panelIn .28s ease both; }
+      @keyframes panelIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+      .tab-panel[data-tone="gold"] { --tone: var(--gold); --tone-soft: var(--gold-soft); }
+      .tab-panel[data-tone="teal"] { --tone: var(--teal); --tone-soft: var(--teal-soft); }
+      .tab-panel[data-tone="blue"] { --tone: var(--blue); --tone-soft: var(--blue-soft); }
+      .tab-panel[data-tone="coral"] { --tone: var(--coral); --tone-soft: var(--coral-soft); }
+      .tab-panel[data-tone="green"] { --tone: var(--green); --tone-soft: var(--green-soft); }
+      .tab-panel[data-tone="red"] { --tone: var(--red); --tone-soft: var(--red-soft); }
+      .tab-panel a { color: var(--tone); }
+
+      section { margin-top: 36px; scroll-margin-top: 90px; }
+      .tab-panel section:first-child { margin-top: 26px; }
+      .sec-head { display: flex; align-items: baseline; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin-bottom: 16px; }
+      .sec-head h2 { font-size: 23px; font-weight: 700; position: relative; padding-left: 16px; }
+      .sec-head h2::before { content: ""; position: absolute; left: 0; top: 4px; bottom: 4px; width: 5px; border-radius: 99px; background: var(--tone); }
+      .sec-head .note { color: var(--muted); font-size: 13.5px; max-width: 620px; }
+
+      /* Floating cards — shared lift */
+      .kpi, .test-chip, .cd, .ana-box, .emp, .album, .chan, .box, .comment, .fstep, .day-detail, .song-detail, .truth, .decision-logbar {
+        box-shadow: var(--shadow-sm); border-radius: var(--radius);
+      }
+
+      /* ---------- Live numbers ---------- */
+      .live-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+      .kpi { background: var(--panel); border: 1px solid var(--line); border-top: 3px solid var(--tone); padding: 18px; }
+      .kpi .lbl { font-family: "Sora", sans-serif; color: var(--ink); font-size: clamp(24px, 2.4vw, 30px); line-height: 1.15; margin: 0 0 10px; font-weight: 800; letter-spacing: -.01em; }
+      .kpi .num { font-family: "Sora", sans-serif; font-size: 26px; font-weight: 800; line-height: 1; }
+      .kpi .num em { font-style: normal; color: var(--tone); font-size: 19px; }
+      .kpi .sub { color: var(--muted); font-size: 12.5px; margin-top: 6px; }
+      .tests-strip { margin-top: 14px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+      .test-chip { background: var(--panel); border: 1px solid var(--line); padding: 16px 18px; }
+      .test-chip h3 { font-size: 14px; }
+      .test-chip .sig { color: var(--muted); font-size: 12px; font-family: "IBM Plex Mono", monospace; margin-top: 3px; }
+      .floorbar { height: 8px; border-radius: 99px; background: var(--panel-2); border: 1px solid var(--line-soft); margin-top: 12px; overflow: hidden; }
+      .floorbar i { display: block; height: 100%; background: var(--tone); }
+      .test-chip .fnum { font-size: 12.5px; color: var(--ink-2); margin-top: 7px; font-weight: 600; }
+      .countdowns { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 14px; }
+      .cd { border: 1px solid var(--line); padding: 18px; background: linear-gradient(160deg, var(--tone-soft), transparent 62%), var(--panel); }
+      .cd .cd-num { font-family: "IBM Plex Mono", monospace; font-size: 26px; font-weight: 600; }
+      .cd .cd-lbl { font-weight: 700; font-size: 14px; margin-top: 2px; }
+      .cd .cd-sub { color: var(--muted); font-size: 12.5px; }
+      .snapshot-note { margin-top: 14px; font-size: 13px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 6px 16px; }
+      .snapshot-note b { color: var(--ink-2); }
+      .chart-card { margin-top: 14px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow-sm); padding: 20px; }
+      .chart-card h3 { font-size: 16px; margin-bottom: 2px; }
+      .chart-card .csub { color: var(--muted); font-size: 12.5px; margin: 0 0 12px; }
+
+      /* ---------- Spotlight / Song of day ---------- */
+      .spotlight { position: relative; border-radius: 20px; overflow: hidden; border: 1px solid var(--line); box-shadow: var(--shadow); }
+      .spotlight-inner { position: relative; display: grid; grid-template-columns: 300px 1fr; background: var(--panel); }
+      .spotlight-img { min-height: 340px; background-size: cover; background-position: center 30%; }
+      .spotlight-body { padding: 26px; }
+      .spotlight-body .kick { font-family: "IBM Plex Mono", monospace; font-size: 11.5px; letter-spacing: .12em; color: var(--tone); text-transform: uppercase; }
+      .spotlight-body h3 { font-size: clamp(23px, 3.2vw, 32px); margin: 8px 0 6px; }
+      .spotlight-body p { color: var(--ink-2); margin: 0 0 14px; max-width: 560px; }
+      .stat-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
+      .stat { border: 1px solid var(--line); background: var(--panel-2); border-radius: 12px; padding: 9px 13px; }
+      .stat b { font-family: "Sora", sans-serif; font-size: 19px; display: block; line-height: 1.1; color: var(--tone); }
+      .stat span { font-size: 12px; color: var(--muted); font-weight: 600; }
+      .btn { display: inline-flex; align-items: center; gap: 8px; border-radius: 999px; padding: 9px 16px; font-weight: 700; font-size: 14px; text-decoration: none; border: 1px solid var(--gold); color: #14100a; background: linear-gradient(135deg, #f3c169, #dd9425); cursor: pointer; font-family: inherit; }
+      .tab-panel .btn { border-color: var(--tone); }
+      .tab-panel[data-tone="gold"] .btn, .tab-panel:not([data-tone]) .btn { border-color: var(--gold); }
+      .btn.ghost { background: transparent; color: var(--tone); }
+      .btn.red-ghost { background: transparent; color: var(--red); border-color: var(--red); }
+      .btn.small { padding: 6px 13px; font-size: 13px; min-height: 34px; }
+      .btnrow { display: flex; flex-wrap: wrap; gap: 10px; }
+      .spot-help { font-size: 13px; font-weight: 700; color: var(--muted); margin: 0 0 8px; letter-spacing: .02em; }
+      .spot-feedback { min-height: 22px; margin: 10px 0 0; font-size: 13.5px; font-weight: 700; color: var(--green); }
+      .spot-feedback:empty { margin: 0; min-height: 0; }
+      .repost-plan { margin-top: 14px; border: 1px dashed var(--line); border-radius: 14px; background: var(--panel-2); padding: 16px 18px; }
+      .repost-plan h4 { margin: 0 0 4px; font-size: 15px; font-family: "Sora", sans-serif; }
+      .repost-plan .rp-sub { color: var(--muted); font-size: 13px; margin: 0 0 12px; }
+      .repost-plan ul { margin: 0 0 14px; padding: 0; list-style: none; display: grid; gap: 8px; }
+      .repost-plan ul li { font-size: 14px; color: var(--ink-2); padding-left: 22px; position: relative; }
+      .repost-plan ul li::before { content: ""; position: absolute; left: 2px; top: 8px; width: 7px; height: 7px; border-radius: 2px; background: var(--tone); }
+      .repost-plan ul li b { color: var(--ink); }
+      .sotd-body p + p { margin-top: 10px; }
+      .link-box { margin-top: 12px; border: 1px dashed var(--line); border-radius: 12px; background: var(--panel-2); padding: 12px 14px; }
+      .link-box .lb-label { font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-family: "IBM Plex Mono", monospace; margin: 0 0 4px; }
+      .link-box .lb-link { font-family: "IBM Plex Mono", monospace; font-size: 13.5px; color: var(--ink); word-break: break-all; margin: 0; user-select: all; }
+      .sotd { display: grid; grid-template-columns: 1fr 340px; gap: 0; border: 1px solid var(--line); border-radius: 20px; overflow: hidden; background: var(--panel); box-shadow: var(--shadow-sm); }
+      .sotd-body { padding: 26px; }
+      .sotd-body .kick { font-family: "IBM Plex Mono", monospace; font-size: 11.5px; letter-spacing: .12em; color: var(--tone); text-transform: uppercase; }
+      .sotd-body blockquote { margin: 14px 0; font-family: "Sora", sans-serif; font-size: clamp(20px, 3vw, 27px); font-weight: 700; line-height: 1.3; }
+      .sotd-body p { color: var(--ink-2); margin: 0; }
+      .sotd img { width: 100%; height: 100%; min-height: 260px; object-fit: cover; object-position: center 20%; display: block; }
+
+      /* ---------- Brothers ---------- */
+      .brothers-visual { border: 1px solid var(--line); border-radius: 20px; overflow: hidden; background: var(--panel); box-shadow: var(--shadow-sm); }
+      .brothers-visual img { width: 100%; height: 340px; object-fit: cover; object-position: center 22%; display: block; }
+      .brothers-names { display: grid; grid-template-columns: 1fr 1fr; }
+      .brother-name { padding: 18px 20px 20px; text-align: center; }
+      .brother-name + .brother-name { border-left: 1px solid var(--line-soft); }
+      .brother-name h3 { font-size: clamp(20px, 3vw, 26px); font-weight: 800; }
+      .motto-band { margin-top: 14px; border: 1px solid var(--line); border-radius: var(--radius); background: linear-gradient(90deg, var(--gold-soft), transparent 55%, var(--red-soft)); padding: 14px 18px; display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; justify-content: space-between; box-shadow: var(--shadow-sm); }
+      .motto-band .motto { font-family: "Sora", sans-serif; font-weight: 700; font-size: 15px; }
+      .motto-band .motto em { font-style: normal; color: var(--gold); }
+      .motto-band .verse { font-family: "IBM Plex Mono", monospace; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+
+      /* ---------- Team ---------- */
+      .team { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+      .emp { background: var(--panel); border: 1px solid var(--line); padding: 22px; display: flex; flex-direction: column; gap: 12px; }
+      .emp-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+      .emp h3 { font-size: 19px; }
+      .emp .emp-role { color: var(--muted); font-size: 13px; font-weight: 600; margin-top: 2px; }
+      .badge { flex: none; font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 999px; display: inline-flex; align-items: center; gap: 6px; }
+      .badge.active { background: var(--green-soft); color: var(--green); }
+      .badge.new { background: var(--gold-soft); color: var(--gold); }
+      .emp .mission { color: var(--ink-2); font-size: 14.5px; margin: 0; }
+      .emp h4 { margin: 4px 0 0; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-family: "IBM Plex Mono", monospace; font-weight: 600; }
+      .emp ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+      .emp ul li { font-size: 14px; color: var(--ink-2); padding-left: 18px; position: relative; }
+      .emp ul li::before { content: ""; position: absolute; left: 2px; top: 9px; width: 6px; height: 6px; border-radius: 2px; background: var(--tone); }
+      .emp ul li b { color: var(--ink); font-weight: 700; }
+      .emp .now { border-top: 1px dashed var(--line); padding-top: 10px; font-size: 14px; color: var(--ink-2); }
+      .emp .now b { color: var(--ink); }
+      .cadence { display: flex; flex-wrap: wrap; gap: 6px; }
+      .cadence span { font-family: "IBM Plex Mono", monospace; font-size: 12px; border: 1px solid var(--line); border-radius: 8px; padding: 4px 8px; color: var(--ink-2); background: var(--panel-2); }
+
+      /* ---------- Week board ---------- */
+      .week { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; }
+      .day { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow-sm); padding: 14px; display: flex; flex-direction: column; gap: 8px; text-align: left; font: inherit; color: inherit; cursor: pointer; width: 100%; transition: transform .15s ease, border-color .15s ease; }
+      .day:hover, .day:focus-visible { border-color: var(--tone); transform: translateY(-2px); }
+      .day.today { border-color: var(--tone); box-shadow: 0 0 0 1px var(--tone) inset, var(--shadow-sm); }
+      .day[aria-expanded="true"] { border-color: var(--tone); box-shadow: 0 0 0 1px var(--tone) inset, var(--shadow-sm); }
+      .day .dow { font-family: "IBM Plex Mono", monospace; font-size: 11.5px; letter-spacing: .08em; color: var(--muted); text-transform: uppercase; }
+      .day .dnum { font-family: "Sora", sans-serif; font-size: 22px; font-weight: 800; line-height: 1; color: var(--tone); }
+      .day .song { font-weight: 700; font-size: 14.5px; line-height: 1.3; }
+      .day .detail { color: var(--ink-2); font-size: 13px; }
+      .day .slots { margin-top: auto; display: grid; gap: 4px; }
+      .day .slots span { font-family: "IBM Plex Mono", monospace; font-size: 11.5px; color: var(--muted); }
+      .day .expand-hint { font-size: 12px; font-weight: 700; color: var(--tone); }
+      .st { font-size: 11px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; padding: 3px 8px; border-radius: 999px; align-self: flex-start; }
+      .st.live { background: var(--green-soft); color: var(--green); }
+      .st.sched { background: var(--blue-soft); color: var(--blue); }
+      .st.next { background: var(--gold-soft); color: var(--gold); }
+      .day-detail { margin-top: 14px; border: 1px solid var(--line); background: var(--panel); overflow: hidden; }
+      .day-detail-head { padding: 18px 20px 6px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; align-items: baseline; }
+      .day-detail-head h3 { font-size: 20px; }
+      .clip-list { padding: 8px 20px 20px; display: grid; gap: 10px; }
+      .clip { border: 1px solid var(--line-soft); border-radius: 14px; padding: 14px 16px; background: var(--panel-2); display: grid; grid-template-columns: 92px 1fr; gap: 14px; }
+      .clip .thumb { width: 92px; height: 120px; border-radius: 10px; background-size: cover; background-position: center; background-color: var(--panel); }
+      .clip .ctime { font-family: "IBM Plex Mono", monospace; font-size: 12px; color: var(--tone); font-weight: 600; }
+      .clip h4 { margin: 2px 0 4px; font-size: 16px; font-family: "Sora", sans-serif; }
+      .clip .cap { color: var(--ink-2); font-size: 13.5px; margin: 0 0 8px; }
+      .clip .meta { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 12.5px; color: var(--muted); align-items: center; }
+      .clip .meta a { font-weight: 700; }
+      .pin { font-weight: 700; }
+      .pin.yes { color: var(--green); } .pin.scheduled { color: var(--blue); } .pin.pending { color: var(--gold); }
+
+      /* ---------- Testing ground ---------- */
+      .funnel { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; gap: 12px; align-items: stretch; }
+      .fstep { background: var(--panel); border: 1px solid var(--line); padding: 20px; }
+      .fstep .step-n { font-family: "IBM Plex Mono", monospace; color: var(--tone); font-size: 12px; letter-spacing: .1em; }
+      .fstep h3 { font-size: 17px; margin: 6px 0; }
+      .fstep p { margin: 0; color: var(--ink-2); font-size: 14px; }
+      .farrow { align-self: center; color: var(--muted); font-size: 22px; font-family: "Sora", sans-serif; }
+      .vibes { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+      .vibes span { font-size: 12.5px; font-weight: 700; border: 1px solid var(--line); border-radius: 999px; padding: 4px 10px; color: var(--ink-2); background: var(--panel-2); }
+
+      /* ---------- Catalog ---------- */
+      .cat-tools { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; align-items: center; }
+      .cat-tools input[type="search"] { flex: 1 1 220px; padding: 10px 16px; border-radius: 999px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); font: inherit; font-size: 14.5px; min-height: 44px; box-shadow: var(--shadow-sm); }
+      .cat-tools select { padding: 10px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); font: inherit; font-size: 14px; min-height: 44px; box-shadow: var(--shadow-sm); }
+      .feel-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+      .feel-chips button { border: 1px solid var(--line); background: var(--panel); color: var(--ink-2); border-radius: 999px; padding: 6px 12px; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; min-height: 34px; }
+      .feel-chips button[aria-pressed="true"] { border-color: var(--tone); color: var(--tone); background: var(--tone-soft); }
+      .song-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+      .song-card { border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); box-shadow: var(--shadow-sm); padding: 16px 16px 16px 19px; text-align: left; font: inherit; color: inherit; cursor: pointer; width: 100%; position: relative; overflow: hidden; }
+      .song-card::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--tone); opacity: .8; }
+      .song-card:hover, .song-card:focus-visible { border-color: var(--tone); }
+      .song-card h3 { font-size: 16.5px; }
+      .song-card .smeta { color: var(--muted); font-size: 12.5px; font-family: "IBM Plex Mono", monospace; margin-top: 3px; }
+      .song-card .sfeel { display: inline-block; margin-top: 8px; font-size: 12px; font-weight: 700; border-radius: 999px; padding: 3px 9px; background: var(--tone-soft); color: var(--tone); }
+      .song-card .sstats { color: var(--ink-2); font-size: 13px; margin-top: 8px; }
+      .song-detail { margin-top: 14px; border: 1px solid var(--tone); background: var(--panel); padding: 22px; }
+      .song-detail h3 { font-size: 21px; }
+      .song-detail .hook { font-family: "Sora", sans-serif; font-size: 17px; font-weight: 600; margin: 10px 0; }
+      .song-detail p { color: var(--ink-2); margin: 6px 0; font-size: 14.5px; }
+      .albums { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 14px; }
+      .album { background: var(--panel); border: 1px solid var(--line); padding: 18px 18px 18px 21px; position: relative; overflow: hidden; }
+      .album::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--tone); opacity: .8; }
+      .album .ano { font-family: "IBM Plex Mono", monospace; font-size: 12px; color: var(--muted); letter-spacing: .08em; }
+      .album h3 { font-size: 18px; margin: 5px 0 2px; }
+      .album .acount { color: var(--ink-2); font-size: 14px; }
+      .bar { height: 8px; border-radius: 99px; background: var(--panel-2); border: 1px solid var(--line-soft); margin-top: 12px; overflow: hidden; }
+      .bar i { display: block; height: 100%; border-radius: 99px; }
+      .bar i.pub { background: var(--green); width: 100%; } .bar i.prod { background: var(--gold); width: 62%; } .bar i.making { background: var(--red); width: 30%; }
+      .album .astat { margin-top: 8px; font-size: 12.5px; font-weight: 700; }
+      .astat.pub { color: var(--green); } .astat.prod { color: var(--gold); } .astat.making { color: var(--red); }
+      .truth { margin-top: 14px; border: 1px dashed var(--line); padding: 16px 18px; color: var(--ink-2); font-size: 14.5px; background: var(--panel-2); }
+      .truth b { color: var(--ink); }
+      .empty-note { color: var(--muted); font-size: 14px; padding: 18px; border: 1px dashed var(--line); border-radius: var(--radius); text-align: center; grid-column: 1 / -1; }
+
+      /* ---------- Analytics & charts ---------- */
+      .ana-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+      .ana-box { background: var(--panel); border: 1px solid var(--line); padding: 22px; }
+      .ana-box.wide { grid-column: 1 / -1; }
+      .ana-box h3 { font-size: 17px; margin-bottom: 4px; }
+      .ana-box .ana-sub { color: var(--muted); font-size: 13px; margin: 0 0 14px; }
+      .ana-box p.body { color: var(--ink-2); font-size: 14.5px; margin: 0 0 10px; }
+      .ana-box p.body b { color: var(--ink); }
+      .abar { display: grid; grid-template-columns: 168px 1fr 44px; gap: 10px; align-items: center; padding: 5px 0; font-size: 13.5px; }
+      .abar .aname { color: var(--ink-2); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .abar .atrack { height: 12px; border-radius: 99px; background: var(--panel-2); border: 1px solid var(--line-soft); overflow: hidden; }
+      .abar .atrack i { display: block; height: 100%; background: var(--tone); border-radius: 99px; }
+      .abar .aval { font-family: "IBM Plex Mono", monospace; font-weight: 600; text-align: right; }
+      .abar .aval small { display: block; font-weight: 400; color: var(--muted); font-size: 11px; }
+      .ana-totals { display: flex; flex-wrap: wrap; gap: 6px 18px; border-top: 1px dashed var(--line); margin-top: 12px; padding-top: 12px; font-size: 13.5px; color: var(--ink-2); }
+      .ana-totals b { color: var(--ink); font-family: "Sora", sans-serif; }
+      .ana-tablewrap { overflow-x: auto; }
+      .ana-table { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 380px; }
+      .ana-table th { text-align: left; font-family: "IBM Plex Mono", monospace; font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 600; padding: 6px 8px 6px 0; border-bottom: 1px solid var(--line); }
+      .ana-table td { padding: 7px 8px 7px 0; border-bottom: 1px solid var(--line-soft); color: var(--ink-2); vertical-align: top; }
+      .ana-table td:first-child { color: var(--ink); font-weight: 700; }
+      .ana-table td.num, .ana-table th.num { text-align: right; font-family: "IBM Plex Mono", monospace; padding-right: 0; }
+      .ana-table tr:last-child td { border-bottom: none; }
+      .ana-flag { border: 1px solid var(--red); background: linear-gradient(160deg, var(--red-soft), transparent 55%), var(--panel); border-radius: var(--radius); box-shadow: var(--shadow-sm); padding: 22px; }
+      .ana-flag h3 { font-size: 17px; margin-bottom: 4px; }
+      .ana-flag .ana-sub { color: var(--muted); font-size: 13px; margin: 0 0 12px; }
+      .ana-flag p.body { color: var(--ink-2); font-size: 14.5px; margin: 0 0 10px; }
+      .ana-flag p.body b { color: var(--ink); }
+      .ana-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 4px; }
+      .ana-chips span { font-family: "IBM Plex Mono", monospace; font-size: 12px; border: 1px solid var(--line); border-radius: 8px; padding: 4px 8px; color: var(--ink-2); background: var(--panel-2); }
+      .chart-svg { width: 100%; height: auto; display: block; }
+      .chart-svg text { font-family: "IBM Plex Mono", monospace; fill: var(--muted); }
+      .chart-svg .val { fill: var(--ink); font-weight: 600; }
+      .chart-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12.5px; color: var(--ink-2); font-weight: 600; margin-bottom: 10px; }
+      .chart-legend span { display: inline-flex; align-items: center; gap: 6px; }
+      .chart-legend i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+      @media (max-width: 720px) { .ana-grid { grid-template-columns: 1fr; } .abar { grid-template-columns: 118px 1fr 40px; } }
+
+      /* ---------- Comments / channels ---------- */
+      .comments { display: grid; gap: 12px; }
+      .comment { background: var(--panel); border: 1px solid var(--line); padding: 18px 20px; display: grid; grid-template-columns: 1fr; gap: 6px; }
+      .comment .chead { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: baseline; }
+      .comment .cwho { font-weight: 800; font-size: 14.5px; }
+      .comment .cplat { font-family: "IBM Plex Mono", monospace; font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--tone); }
+      .comment .csong { color: var(--muted); font-size: 13px; }
+      .comment .ctext { font-size: 15.5px; }
+      .comment .creply { border-top: 1px dashed var(--line); padding-top: 8px; font-size: 13.5px; color: var(--ink-2); }
+      .comment .creply b { color: var(--ink); }
+      .comment .creply .sent { color: var(--green); font-weight: 700; }
+      .comment .creply .queued { color: var(--gold); font-weight: 700; }
+      .channels { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+      .chan { background: var(--panel); border: 1px solid var(--line); padding: 18px; }
+      .chan h3 { font-size: 16px; }
+      .chan .handle { font-family: "IBM Plex Mono", monospace; font-size: 12.5px; color: var(--tone); margin: 3px 0 6px; word-break: break-all; }
+      .chan p { margin: 0; color: var(--ink-2); font-size: 13.5px; }
+
+      /* ---------- Decisions ---------- */
+      .split { display: grid; grid-template-columns: 1.2fr 1fr; gap: 14px; }
+      .box { background: var(--panel); border: 1px solid var(--line); padding: 22px; }
+      .box h3 { font-size: 17px; margin-bottom: 12px; }
+      .decision { border-top: 1px solid var(--line-soft); padding: 14px 0; }
+      .decision:first-of-type { border-top: none; padding-top: 0; }
+      .decision .tt { font-weight: 700; font-size: 15px; display: flex; justify-content: space-between; gap: 10px; }
+      .decision .due { font-family: "IBM Plex Mono", monospace; font-size: 12px; color: var(--tone); flex: none; text-align: right; }
+      .decision .td { color: var(--ink-2); font-size: 13.5px; margin: 4px 0 10px; }
+      .decision .dstate { font-size: 13px; font-weight: 700; margin-top: 8px; min-height: 20px; }
+      .decision .dstate.approved { color: var(--green); } .decision .dstate.held, .decision .dstate.declined { color: var(--red); }
+      .task { display: flex; gap: 12px; padding: 11px 0; border-top: 1px solid var(--line-soft); }
+      .task:first-of-type { border-top: none; padding-top: 0; }
+      .task .tick { flex: none; width: 22px; height: 22px; border-radius: 7px; border: 1.5px solid var(--line); margin-top: 1px; position: relative; background: var(--panel-2); }
+      .task.done .tick { background: var(--green-soft); border-color: var(--green); }
+      .task.done .tick::after { content: "✓"; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: var(--green); font-size: 13px; font-weight: 800; }
+      .task .tt { font-weight: 700; font-size: 14.5px; }
+      .task .td { color: var(--ink-2); font-size: 13.5px; }
+      .task .due { margin-left: auto; flex: none; font-family: "IBM Plex Mono", monospace; font-size: 12px; color: var(--tone); text-align: right; }
+      .rule { display: flex; gap: 10px; padding: 9px 0; border-top: 1px solid var(--line-soft); font-size: 14px; color: var(--ink-2); }
+      .rule:first-of-type { border-top: none; padding-top: 0; }
+      .rule .rn { font-family: "IBM Plex Mono", monospace; color: var(--tone); font-weight: 600; flex: none; }
+      .rule b { color: var(--ink); }
+      .decision-logbar { margin-top: 14px; border: 1px solid var(--line); background: var(--panel-2); padding: 14px 18px; display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; justify-content: space-between; }
+      .decision-logbar p { margin: 0; font-size: 14px; color: var(--ink-2); }
+      .decision-logbar p b { color: var(--ink); }
+
+      /* ---------- Brother Talk (embedded board) ---------- */
+      .board-frame-wrap { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow-sm); overflow: hidden; }
+      .board-frame { display: block; width: 100%; height: 72vh; min-height: 560px; border: 0; background: var(--panel); }
+
+      /* ---------- Talk about this (card → Brother Talk) ---------- */
+      .talk-row { display: flex; justify-content: flex-end; margin-top: 12px; }
+      .talk-btn { display: inline-flex; align-items: center; gap: 7px; border: 1px solid var(--line); background: var(--panel-2); color: var(--ink-2); border-radius: 999px; padding: 6px 10px; font: inherit; font-size: 12.5px; font-weight: 700; cursor: pointer; min-height: 32px; line-height: 1.2; text-align: left; }
+      .talk-btn svg { width: 14px; height: 14px; flex: none; }
+      .talk-btn:hover, .talk-btn:focus-visible { border-color: var(--tone, var(--gold)); color: var(--tone, var(--gold)); }
+      .talk-btn.copied { border-color: var(--green); color: var(--green); background: var(--green-soft); }
+      .ccc-card-highlight { outline: 3px solid var(--gold) !important; outline-offset: 3px; box-shadow: 0 0 0 7px var(--gold-soft), var(--shadow) !important; animation: cccCardPulse 1.25s ease-in-out 2; position: relative; z-index: 2; }
+      @keyframes cccCardPulse { 0%, 100% { outline-color: var(--gold); } 50% { outline-color: rgba(233,168,60,.2); } }
+      @media (prefers-reduced-motion: reduce) { .ccc-card-highlight { animation: none; } }
+      .day > .talk-row, .song-card > .talk-row { margin-top: 8px; justify-content: flex-start; }
+      .brothers-visual > .talk-row { margin-top: 0; padding: 12px 14px 14px; background: var(--panel); border-top: 1px solid var(--line-soft); }
+      .day-detail > .talk-row { margin-top: 0; padding: 4px 20px 18px; }
+      .clip .talk-row { margin-top: 10px; }
+      .motto-band .talk-row { margin-top: 0; }
+      footer { margin-top: 44px; border-top: 1px solid var(--line); padding-top: 18px; color: var(--muted); font-size: 13.5px; display: flex; flex-wrap: wrap; gap: 8px 22px; justify-content: space-between; }
+
+      @media (max-width: 1020px) {
+        .week { grid-template-columns: repeat(3, 1fr); }
+        .albums, .song-grid { grid-template-columns: 1fr 1fr; }
+        .channels, .live-grid, .tests-strip { grid-template-columns: 1fr 1fr; }
+        .funnel { grid-template-columns: 1fr; }
+        .farrow { transform: rotate(90deg); justify-self: center; }
+        .spotlight-inner, .sotd { grid-template-columns: 1fr; }
+        .spotlight-img { min-height: 220px; }
+      }
+      @media (max-width: 720px) {
+        .live-grid, .countdowns { grid-template-columns: 1fr; }
+        .tests-strip { grid-template-columns: 1fr; }
+        .team, .split { grid-template-columns: 1fr; }
+        .week { grid-template-columns: 1fr 1fr; }
+        .albums, .channels, .song-grid { grid-template-columns: 1fr; }
+        .clockbox { text-align: left; }
+        .brand-row { flex-direction: column; align-items: flex-start; }
+        .brothers-visual img { height: 280px; }
+        .brothers-names { grid-template-columns: 1fr; }
+        .brother-name + .brother-name { border-left: none; border-top: 1px solid var(--line-soft); }
+        .brand-emblem { width: 46px; height: 46px; }
+        .clip { grid-template-columns: 1fr; } .clip .thumb { width: 100%; height: 150px; }
+        .tabbar { top: 8px; }
+        .tabbar-inner { border-radius: 22px; gap: 6px; padding: 6px; }
+        .tabbtn { flex: 1 1 30%; justify-content: center; padding: 10px 8px; font-size: 13px; min-height: 44px; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        html { scroll-behavior: auto; }
+        .ticker-track, .tab-panel.active { animation: none; }
+        .day, .tabbtn { transition: none; }
+        .tabbtn:hover, .tabbtn:active, .tabbtn[aria-selected="true"]:hover, .tabbtn[aria-selected="true"]:active { transform: none; }
+      }
+
+    </style>
+  </head>
+  <body>
+    <div class="top-bar" aria-hidden="true"></div>
+    <header class="top">
+      <div class="top-inner">
+        <div class="brand-row">
+          <div class="brand">
+            <div class="brand-lockup">
+              <div class="brand-emblem" aria-hidden="true"><img src="assets/a-3c4dad620157.png" alt="" /></div>
+              <div>
+                <h1>Cross Company <span class="crew">Crew</span></h1>
+              </div>
+            </div>
+            <p class="tagline"><strong>Two brothers. One mission.</strong> Die daily. Live forever.</p>
+            <p class="daily-line" id="dailyLine">Loading today's line…</p>
+          </div>
+          <div class="clockbox" aria-label="Current time in Fremont, California">
+            <div class="clock"><span id="clock">--:--:--</span> <small>PT · Fremont, CA</small></div>
+            <div class="date" id="dateline">Loading…</div>
+          </div>
+        </div>
+        <div class="statusline">
+          <span class="pill"><span class="dot"></span> Week 1 · Nov 21–27 · Day 5 today</span>
+          <span class="pill"><span class="dot gold"></span> Thu: TikTok tests → winners cross-post</span>
+        </div>
+        <div class="quicklinks" aria-label="Quick links">
+          <a class="qlink" href="https://app.notion.com/p/CCC-Operating-System-CCC-OS-3acec43300ce804cbc0cfd64efd3930d" target="_blank" rel="noopener noreferrer" aria-label="Notion — CCC Operating System" title="Notion — CCC Operating System"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="2.5" width="19" height="19" rx="4" fill="#ffffff" stroke="rgba(120,120,120,.45)"/><path d="M8.6 16.4V7.6l6.8 8.8V7.6" fill="none" stroke="#111111" stroke-width="2.1" stroke-linecap="square" stroke-linejoin="miter"/></svg></a>
+          <a class="qlink" href="https://drive.google.com/drive/folders/18MjX--atXtkJSSl74bMvJhRaqrUrfX6i" target="_blank" rel="noopener noreferrer" aria-label="Google Drive — Cross Company Crew folder" title="Google Drive — Cross Company Crew folder"><svg viewBox="0 0 87.3 78" aria-hidden="true"><path d="m6.6 66.85 3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.75-23.8h-27.5c0 1.55.4 3.1 1.2 4.5z" fill="#0066da"/><path d="m43.65 25-13.75-23.8c-1.35.8-2.5 1.9-3.3 3.3l-25.4 44a9.06 9.06 0 0 0 -1.2 4.5h27.5z" fill="#00ac47"/><path d="m73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75 7.65-13.25c.8-1.4 1.2-2.95 1.2-4.5h-27.502l5.852 11.5z" fill="#ea4335"/><path d="m43.65 25 13.75-23.8c-1.35-.8-2.9-1.2-4.5-1.2h-18.5c-1.6 0-3.15.45-4.5 1.2z" fill="#00832d"/><path d="m59.8 53h-32.3l-13.75 23.8c1.35.8 2.9 1.2 4.5 1.2h50.8c1.6 0 3.15-.45 4.5-1.2z" fill="#2684fc"/><path d="m73.4 26.5-12.7-22c-.8-1.4-1.95-2.5-3.3-3.3l-13.75 23.8 16.15 28h27.45c0-1.55-.4-3.1-1.2-4.5z" fill="#ffba00"/></svg></a>
+          <a class="qlink" href="https://www.tiktok.com/@cross.company.crew" target="_blank" rel="noopener noreferrer" aria-label="TikTok" title="TikTok"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="2.5" width="19" height="19" rx="4.5" fill="#010101" stroke="rgba(120,120,120,.45)"/><g transform="translate(4.6 4.3) scale(0.62)"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.84-.32-1.72-.46-2.6-.4-.9.07-1.76.46-2.42 1.07-.68.64-1.08 1.53-1.14 2.45-.04.72.15 1.44.53 2.05.44.69 1.15 1.19 1.95 1.38 1.05.24 2.19-.04 3.03-.64.65-.46 1.12-1.14 1.3-1.92.08-.34.09-.69.1-1.04.01-3.15-.01-6.3.02-9.45.05-1.48.23-2.95.56-4.39z" fill="#ffffff"/></g></svg></a>
+          <a class="qlink" href="https://www.youtube.com/@CrossCompanyCrew" target="_blank" rel="noopener noreferrer" aria-label="YouTube" title="YouTube"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="4" fill="#ff0000"/><path d="M10.2 9.3v5.4c0 .45.5.74.9.5l4.6-2.7c.38-.22.38-.78 0-1L11.1 8.8c-.4-.24-.9.05-.9.5z" fill="#ffffff"/></svg></a>
+          <a class="qlink" href="https://www.instagram.com/cross.company.crew" target="_blank" rel="noopener noreferrer" aria-label="Instagram" title="Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="qlinkIg" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#feda75"/><stop offset=".35" stop-color="#fa7e1e"/><stop offset=".6" stop-color="#d62976"/><stop offset=".82" stop-color="#962fbf"/><stop offset="1" stop-color="#4f5bd5"/></linearGradient></defs><rect x="2.5" y="2.5" width="19" height="19" rx="5" fill="url(#qlinkIg)"/><rect x="6.6" y="6.6" width="10.8" height="10.8" rx="3.4" fill="none" stroke="#ffffff" stroke-width="1.7"/><circle cx="12" cy="12" r="2.7" fill="none" stroke="#ffffff" stroke-width="1.7"/><circle cx="15.9" cy="8.1" r="1.15" fill="#ffffff"/></svg></a>
+          <a class="qlink" href="https://www.facebook.com/profile.php?id=61579420326626" target="_blank" rel="noopener noreferrer" aria-label="Facebook" title="Facebook"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="#1877f2"/><path d="M13.6 21v-6.9h2.32l.35-2.7H13.6V9.68c0-.78.22-1.31 1.34-1.31h1.43V5.95c-.25-.03-1.1-.11-2.08-.11-2.06 0-3.47 1.26-3.47 3.57v1.99H8.5v2.7h2.32V21h2.78z" fill="#ffffff"/></svg></a>
+          <a class="qlink" href="https://crosscompanycrew.com" target="_blank" rel="noopener noreferrer" aria-label="Website" title="Website — crosscompanycrew.com"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="2.5" width="19" height="19" rx="4.5" fill="#e9a83c"/><g fill="none" stroke="#161310" stroke-width="1.5"><circle cx="12" cy="12" r="5.6"/><ellipse cx="12" cy="12" rx="2.7" ry="5.6"/><path d="M6.4 12h11.2M7.7 8.7h8.6M7.7 15.3h8.6"/></g></svg></a>
+        </div>
+      </div>
+    </header>
+
+    <div class="ticker" aria-hidden="true"><div class="ticker-track">
+      <span><b>Die daily</b></span><span>†</span><span><i>Live forever</i></span><span>†</span><span>Hip-hop first, every sound in faith</span><span>†</span><span><b>Puzzle Pieces</b></span><span>†</span><span>Rest Is Holy</span><span>†</span><span><i>Home Is Her Name</i></span><span>†</span><span>Two brothers · One mission</span><span>†</span>
+      <span><b>Die daily</b></span><span>†</span><span><i>Live forever</i></span><span>†</span><span>Hip-hop first, every sound in faith</span><span>†</span><span><b>Puzzle Pieces</b></span><span>†</span><span>Rest Is Holy</span><span>†</span><span><i>Home Is Her Name</i></span><span>†</span><span>Two brothers · One mission</span><span>†</span>
+    </div></div>
+
+    <div class="tabbar"><div class="tabbar-inner" role="tablist" aria-label="Dashboard areas">
+        <button class="tabbtn" type="button" role="tab" id="tab-overview" aria-controls="panel-overview" aria-selected="true" data-tab="overview" style="--tc:#e9a83c"><span class="tdot"></span>Overview</button>
+        <button class="tabbtn" type="button" role="tab" id="tab-analytics" aria-controls="panel-analytics" aria-selected="false" data-tab="analytics" style="--tc:#35b8a6"><span class="tdot"></span>Analytics</button>
+        <button class="tabbtn" type="button" role="tab" id="tab-week" aria-controls="panel-week" aria-selected="false" data-tab="week" style="--tc:#5ea8d3"><span class="tdot"></span>This Week</button>
+        <button class="tabbtn" type="button" role="tab" id="tab-catalog" aria-controls="panel-catalog" aria-selected="false" data-tab="catalog" style="--tc:#e07856"><span class="tdot"></span>Catalog</button>
+        <button class="tabbtn" type="button" role="tab" id="tab-community" aria-controls="panel-community" aria-selected="false" data-tab="community" style="--tc:#57b877"><span class="tdot"></span>Community</button>
+        <button class="tabbtn" type="button" role="tab" id="tab-team" aria-controls="panel-team" aria-selected="false" data-tab="team" style="--tc:#e0523d"><span class="tdot"></span>Team &amp; Decisions</button>
+        <button class="tabbtn" type="button" role="tab" id="tab-chat" aria-controls="panel-chat" aria-selected="false" data-tab="chat" style="--tc:#e9a83c"><span class="tdot"></span>Chat</button>
+      </div></div>
+
+    <div class="wrap">
+
+      <!-- LIVE NUMBERS -->
+      <section id="live" style="margin-top:34px;">
+        <div class="sec-head"><h2>Live Numbers</h2><span class="note">Win floor: 5</span></div>
+        <div class="live-grid">
+          <div class="kpi"><div class="lbl">TikTok views · Days 1–4</div><div class="num">423</div><div class="sub">10 clips · 60.4 / post</div></div>
+          <div class="kpi"><div class="lbl">Saves · TikTok, Days 1–4</div><div class="num">0 <em>/ 5</em></div><div class="sub">Floor is 5</div></div>
+          <div class="kpi"><div class="lbl">Sends &amp; shares · TikTok</div><div class="num">0 <em>/ 5</em></div><div class="sub">Test 1 today 12:30 PM</div></div>
+          <div class="kpi"><div class="lbl">TikTok followers</div><div class="num">17</div><div class="sub">IG 12 · YouTube 60</div></div>
+        </div>
+        <div class="tests-strip" aria-label="Where the four tests stand">
+          <div class="test-chip"><h3>Test 1 · Send this to your brother</h3><div class="sig">HUMAN SHIELD · SENDS · TODAY 12:30 PM</div><div class="floorbar"><i style="width:0%"></i></div><div class="fnum">0 / 5 · Verdict at 48h</div></div>
+          <div class="test-chip"><h3>Test 2 · Use this sound</h3><div class="sig">REROUTED · SOUND USES · RAN TUE 12:30 PM</div><div class="floorbar"><i style="width:0%"></i></div><div class="fnum">Processing · Recheck Wed 9 AM</div></div>
+          <div class="test-chip"><h3>Test 3 · The story behind the line</h3><div class="sig">THE LEAST OF THESE · COMMENTS + SAVES · THU 7:30 AM</div><div class="floorbar"><i style="width:0%"></i></div><div class="fnum">Thu 7:30 AM · Verdict at 48h</div></div>
+          <div class="test-chip"><h3>Test 4 · Two Brothers, One Mic</h3><div class="sig">FOUR QUARTERS · DUETS · THU 7:30 PM</div><div class="floorbar"><i style="width:0%"></i></div><div class="fnum">Thu 7:30 PM · Verdict at 48h</div></div>
+        </div>
+        <div class="countdowns">
+          <div class="cd"><div class="cd-num" id="cdNextPost">--:--:--</div><div class="cd-lbl">To the next post slot</div><div class="cd-sub" id="cdNextPostSub">7:30 AM · 12:30 PM · 7:30 PM PT</div></div>
+          <div class="cd red"><div class="cd-num" id="cdWinner">--</div><div class="cd-lbl">To the first winner pick</div><div class="cd-sub">Fri Nov 27, 9 AM PT</div></div>
+          <div class="cd"><div class="cd-num" id="cdWeek">--</div><div class="cd-lbl">Left in Week 1</div><div class="cd-sub">Closes Fri Nov 27</div></div>
+        </div>
+        
+        <div class="chart-card">
+          <h3>Top clips so far · TikTok views</h3>
+          <p class="csub">Days 1–3</p>
+          <div class="abar"><span class="aname">Reshuffle the Deck</span><span class="atrack"><i style="width:100%"></i></span><span class="aval">93</span></div>
+          <div class="abar"><span class="aname">In Key</span><span class="atrack"><i style="width:82%"></i></span><span class="aval">76</span></div>
+          <div class="abar"><span class="aname">Drip · hero</span><span class="atrack"><i style="width:73%"></i></span><span class="aval">68</span></div>
+          <div class="abar"><span class="aname">One Day Outta Seven · AM</span><span class="atrack"><i style="width:65%"></i></span><span class="aval">60</span></div>
+          <div class="abar"><span class="aname">Puzzle Pieces · hero</span><span class="atrack"><i style="width:37%"></i></span><span class="aval">34</span></div>
+        </div>
+        <p class="snapshot-note"><span><b>Snapshot:</b> Tue Nov 24, 8:47 PM PT</span><span><b>Next:</b> Wed Nov 25, 9 AM PT</span></p>
+      </section>
+
+      <!-- ANALYTICS -->
+      <section id="analytics">
+        <div class="sec-head"><h2>Analytics</h2><span class="note">Baseline Tue Nov 24</span></div>
+        <div class="ana-grid">
+          <div class="ana-box">
+            <h3>TikTok baseline · Days 1–3</h3>
+            <p class="ana-sub">Views per clip · 7 videos</p>
+            <div class="abar"><span class="aname">Reshuffle the Deck</span><span class="atrack"><i style="width:100%"></i></span><span class="aval">93</span></div>
+            <div class="abar"><span class="aname">In Key</span><span class="atrack"><i style="width:82%"></i></span><span class="aval">76<small>1.98s avg</small></span></div>
+            <div class="abar"><span class="aname">Drip · hero</span><span class="atrack"><i style="width:73%"></i></span><span class="aval">68</span></div>
+            <div class="abar"><span class="aname">One Day Outta Seven · AM</span><span class="atrack"><i style="width:65%"></i></span><span class="aval">60<small>1.78s avg</small></span></div>
+            <div class="abar"><span class="aname">Drip · AM</span><span class="atrack"><i style="width:51%"></i></span><span class="aval">47<small>2.32s avg</small></span></div>
+            <div class="abar"><span class="aname">One Day Outta Seven · hero</span><span class="atrack"><i style="width:48%"></i></span><span class="aval">45</span></div>
+            <div class="abar"><span class="aname">Puzzle Pieces · hero</span><span class="atrack"><i style="width:37%"></i></span><span class="aval">34<small>4.39s avg</small></span></div>
+            <div class="ana-totals"><span><b>423</b> total views</span><span><b>60.4</b> per post</span><span><b>2.31s</b> average view</span><span><b>2</b> likes</span><span><b>0</b> comments</span><span><b>0</b> shares</span><span><b>0</b> saves</span></div>
+            <p class="body" style="margin-top:12px;">Most leave at <b>0:01–0:02</b> · Puzzle Pieces held longest: <b>4.39s</b></p>
+          </div>
+          <div class="ana-box">
+            <h3>The same heroes, four platforms</h3>
+            <p class="ana-sub">Views per hero · Days 1–4</p>
+            <div class="ana-tablewrap"><table class="ana-table">
+              <thead><tr><th>Hero</th><th class="num">TikTok</th><th class="num">Facebook</th><th class="num">Instagram</th><th class="num">YouTube</th></tr></thead>
+              <tbody>
+                <tr><td>Puzzle Pieces</td><td class="num">34</td><td class="num">43</td><td class="num">3</td><td class="num">65</td></tr>
+                <tr><td>Drip, Drip, Drizzle</td><td class="num">68</td><td class="num">75</td><td class="num">3</td><td class="num">54</td></tr>
+                <tr><td>One Day Outta Seven</td><td class="num">45</td><td class="num">9</td><td class="num">0</td><td class="num">37</td></tr>
+                <tr><td>Private Pain</td><td class="num">0*</td><td class="num">0</td><td class="num">0</td><td class="num">15</td></tr>
+              </tbody>
+            </table></div>
+            <div class="ana-totals"><span><b>17</b> TikTok followers · flat</span><span><b>12</b> Instagram followers</span><span><b>60</b> YouTube subscribers</span></div>
+            <p class="body" style="margin-top:12px;">YouTube is the only platform with comments. Private Pain kept <b>45.4% watching</b> — best of the week.</p>
+          </div>
+          
+          <div class="ana-box wide">
+            <h3>Hero views by platform · chart</h3>
+            <p class="ana-sub">Views per hero · Days 1–4</p>
+            <div class="chart-legend"><span><i style="background:#e9a83c"></i>TikTok</span><span><i style="background:#5ea8d3"></i>Facebook</span><span><i style="background:#e07856"></i>Instagram</span><span><i style="background:#57b877"></i>YouTube</span></div>
+            <svg class="chart-svg" viewBox="0 0 700 190" role="img" aria-label="Grouped bar chart of hero clip views on TikTok, Facebook, Instagram and YouTube for Puzzle Pieces, Drip Drip Drizzle, One Day Outta Seven and Private Pain"><line x1="40" y1="150" x2="680" y2="150" stroke="currentColor" opacity=".25"/><line x1="40" y1="90" x2="680" y2="90" stroke="currentColor" opacity=".08"/><text x="34" y="153" font-size="10" text-anchor="end">0</text><text x="34" y="33" font-size="10" text-anchor="end">75</text><rect x="70" y="96" width="20" height="54" rx="3" fill="#e9a83c"/><text class="val" x="80" y="91" font-size="10" text-anchor="middle">34</text><rect x="96" y="81" width="20" height="69" rx="3" fill="#5ea8d3"/><text class="val" x="106" y="76" font-size="10" text-anchor="middle">43</text><rect x="122" y="145" width="20" height="5" rx="3" fill="#e07856"/><text class="val" x="132" y="140" font-size="10" text-anchor="middle">3</text><rect x="148" y="46" width="20" height="104" rx="3" fill="#57b877"/><text class="val" x="158" y="41" font-size="10" text-anchor="middle">65</text><text x="122" y="170" font-size="11" text-anchor="middle">Puzzle Pieces</text><rect x="230" y="41" width="20" height="109" rx="3" fill="#e9a83c"/><text class="val" x="240" y="36" font-size="10" text-anchor="middle">68</text><rect x="256" y="30" width="20" height="120" rx="3" fill="#5ea8d3"/><text class="val" x="266" y="25" font-size="10" text-anchor="middle">75</text><rect x="282" y="145" width="20" height="5" rx="3" fill="#e07856"/><text class="val" x="292" y="140" font-size="10" text-anchor="middle">3</text><rect x="308" y="64" width="20" height="86" rx="3" fill="#57b877"/><text class="val" x="318" y="59" font-size="10" text-anchor="middle">54</text><text x="282" y="170" font-size="11" text-anchor="middle">Drip, Drip, Drizzle</text><rect x="390" y="78" width="20" height="72" rx="3" fill="#e9a83c"/><text class="val" x="400" y="73" font-size="10" text-anchor="middle">45</text><rect x="416" y="136" width="20" height="14" rx="3" fill="#5ea8d3"/><text class="val" x="426" y="131" font-size="10" text-anchor="middle">9</text><rect x="442" y="150" width="20" height="0" rx="3" fill="#e07856"/><text class="val" x="452" y="145" font-size="10" text-anchor="middle">0</text><rect x="468" y="91" width="20" height="59" rx="3" fill="#57b877"/><text class="val" x="478" y="86" font-size="10" text-anchor="middle">37</text><text x="442" y="170" font-size="11" text-anchor="middle">One Day Outta Seven</text><rect x="550" y="150" width="20" height="0" rx="3" fill="#e9a83c"/><text class="val" x="560" y="145" font-size="10" text-anchor="middle">0</text><rect x="576" y="150" width="20" height="0" rx="3" fill="#5ea8d3"/><text class="val" x="586" y="145" font-size="10" text-anchor="middle">0</text><rect x="602" y="150" width="20" height="0" rx="3" fill="#e07856"/><text class="val" x="612" y="145" font-size="10" text-anchor="middle">0</text><rect x="628" y="126" width="20" height="24" rx="3" fill="#57b877"/><text class="val" x="638" y="121" font-size="10" text-anchor="middle">15</text><text x="602" y="170" font-size="11" text-anchor="middle">Private Pain</text></svg>
+            <p class="body" style="margin-top:10px;margin-bottom:0;">YouTube &amp; Facebook lead · Instagram: 3, 3, 0, 0</p>
+          </div>
+          <div class="ana-flag wide">
+            <h3>The 0-view problem · distribution, not a penalty</h3>
+            <p class="ana-sub">Checked Wed Nov 25, 7:45 AM PT</p>
+            <p class="body">5 recent clips show <b>0 views</b> but have play time — watched, barely served. <b>No warnings or restrictions.</b> Likely a tiny test audience swiping at 0:00. Recheck at 9 AM.</p>
+            <div class="ana-chips"><span>Play time: 1s · 12s · 14s · 43s · 14s</span><span>AI label: ruled out</span></div>
+          </div>
+          <div class="ana-box wide">
+            <h3>How the tests get judged</h3>
+            <p class="ana-sub">Win = 5+ · Verdict at 48h</p>
+            <p class="body" style="margin-bottom:0;">Win = <b>5+</b> on the primary signal, best of the day. First pick <b>Fri Nov 27</b>. No judging while distribution is down.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- WINNER SPOTLIGHT -->
+      <section id="spotlight">
+        <div class="sec-head"><h2>Winner Spotlight</h2><span class="note">First pick Fri Nov 27, 9 AM</span></div>
+        <div class="spotlight">
+          <div class="spotlight-inner">
+            <div class="spotlight-img" style="background-image:url('assets/a-de0ff762d40f.jpg');" role="img" aria-label="Cover frame from the Puzzle Pieces scenery clip"></div>
+            <div class="spotlight-body">
+              <div class="kick">No crown yet · First pick Fri Nov 27, 9 AM</div>
+              <h3>The frontrunners, before the first crown</h3>
+              <p>No winner yet — nobody hit 5. Leaders: <strong>Reshuffle the Deck</strong> (most views) and <strong>Puzzle Pieces</strong> hero (longest hold).</p>
+              <div class="stat-row">
+                <div class="stat"><b>93</b><span>Views · Reshuffle the Deck (TikTok best)</span></div>
+                <div class="stat"><b>4.39s</b><span>Avg view · Puzzle Pieces hero (longest hold)</span></div>
+                <div class="stat"><b>65</b><span>Views · Puzzle Pieces Short (YouTube best)</span></div>
+                <div class="stat"><b>75</b><span>Views · Drip hero post (Facebook best)</span></div>
+              </div>
+              <p class="spot-help">Share it, send it, or line up the next step</p>
+              <div class="btnrow">
+                <button class="btn" type="button" id="spotShare">Share this spotlight</button>
+                <a class="btn ghost" href="sms:?&amp;body=Hey%20Matt%20-%20frontrunners%20before%20Friday%27s%20crown%3A%20Reshuffle%20the%20Deck%20(93%20TikTok%20views)%20https%3A%2F%2Fwww.tiktok.com%2F%40cross.company.crew%2Fvideo%2F7710885410175487262%20and%20Puzzle%20Pieces%20(longest%20hold%2C%204.39s%2C%2065%20on%20YouTube)%20https%3A%2F%2Fyoutube.com%2Fshorts%2FQRUrBG2jWE0%20Which%20one%20would%20you%20crown%3F">Message Matt</a>
+                <button class="btn ghost" type="button" id="spotCopyCaption">Copy a post about it</button>
+                <button class="btn ghost" type="button" id="spotCalendar">Add Friday 9 AM crown to calendar</button>
+                <button class="btn ghost" type="button" id="spotDuplicate" aria-expanded="false" aria-controls="spotPlan">Duplicate as a re-edit plan</button>
+              </div>
+              <p class="spot-feedback" id="spotFeedback" aria-live="polite"></p>
+              <div class="repost-plan" id="spotPlan" hidden>
+                <h4>Re-edit, don't re-upload</h4>
+                <p class="rp-sub">Under 5 after 48h? Re-edit and repost in 1–2 weeks.</p>
+                <ul>
+                  <li><b>New opening:</b> strongest line in first 2 seconds.</li>
+                  <li><b>New cut:</b> try another vibe.</li>
+                  <li><b>New caption:</b> fresh, in your voice.</li>
+                  <li><b>Keep:</b> same song, lyrics, pinned question.</li>
+                  <li><b>If it wins:</b> it earns the 8 PM cross-post.</li>
+                </ul>
+                <div class="btnrow">
+                  <button class="btn small" type="button" id="spotCopyPlan">Copy this plan</button>
+                  <button class="btn small ghost" type="button" id="spotCalendar2">Add a re-edit reminder</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SONG OF THE DAY -->
+      <section aria-label="Song of the day">
+        <div class="sec-head"><h2>Song of the Day</h2><span class="note">Wed Nov 25</span></div>
+        <div class="sotd">
+          <div class="sotd-body">
+            <div class="kick">Human Shield · Test 1 · Hero 12:30 PM</div>
+            <blockquote>“Send this to the one standing in the gap for you.”</blockquote>
+            <p>Today's hero · Pinned: <strong>“Whose story kept you on your feet?”</strong> · YouTube Short 8 PM.</p>
+            <p class="spot-help" style="margin-top:16px;">Share it, send it, or build from it</p>
+            <div class="btnrow">
+              <button class="btn small" type="button" id="sotdShare">Share this song</button>
+              <button class="btn small ghost" type="button" id="sotdCopyLink" aria-expanded="false" aria-controls="sotdLinkBox">Copy song link</button>
+              <button class="btn small ghost" type="button" id="sotdCopyMessage">Copy a message to send to friends</button>
+              <button class="btn small ghost" type="button" id="sotdCopyForClaude">Copy for Muse: Make a clip from this song</button>
+            </div>
+            <p class="spot-feedback" id="sotdFeedback" aria-live="polite"></p>
+            <div class="link-box" id="sotdLinkBox" hidden>
+              <p class="lb-label">Song link · tonight's Short</p>
+              <p class="lb-link">https://youtube.com/shorts/5vhI6BiVjXo</p>
+            </div>
+          </div>
+          <img src="assets/a-ac46e0ed1815.jpg" alt="Cartoon illustration of David and Matthew, the two brothers of Cross Company Crew, in their studio" />
+        </div>
+      </section>
+
+      <!-- BROTHERS -->
+      <section aria-label="The brothers">
+        <div class="sec-head"><h2>The Brothers</h2><span class="note">Two brothers · One mission</span></div>
+        <div class="brothers-visual">
+          <img src="assets/a-ac46e0ed1815.jpg" alt="Cartoon illustration of David and Matthew taking a selfie together in their studio" />
+          <div class="brothers-names">
+            <div class="brother-name"><h3>David Magraner</h3></div>
+            <div class="brother-name red"><h3>Matthew Donaldson</h3></div>
+          </div>
+        </div>
+        <div class="motto-band"><span class="motto">Die daily. <em>Live forever.</em></span><span class="verse">Hip-hop first · Every sound in faith</span></div>
+      </section>
+
+      <!-- TEAM -->
+      <section id="team">
+        <div class="sec-head"><h2>The Team</h2><span class="note">4 roles · All active</span></div>
+        <div class="team">
+          <article class="emp">
+            <div class="emp-head"><div><h3>Social Media Manager</h3><div class="emp-role">Muse · main chat · since Oct 4</div></div><span class="badge active"><span class="dot"></span>Active</span></div>
+            <p class="mission">Plans, creates and posts all content.</p>
+            <div class="cadence"><span>TikTok 3×/day</span><span>IG · FB · YT 1×/day</span><span>7:30 AM · 12:30 PM · 7:30 PM</span><span>Cross-post 8 PM</span></div>
+            <h4>Duties</h4>
+            <ul>
+              <li><b>Build clips</b> — full chorus, lyrics verified in Notion</li>
+              <li><b>Write captions</b> — two friends talking to fans</li>
+              <li><b>Schedule &amp; verify</b> in TikTok Studio</li>
+              <li><b>Run visual tests</b> — cinematic, scenery, raw</li>
+            </ul>
+            <div class="now"><b>Now:</b> Day 5 fully scheduled. Day 6 starts winner model.</div>
+          </article>
+          <article class="emp">
+            <div class="emp-head"><div><h3>Community Manager</h3><div class="emp-role">Side chat · Nov 24</div></div><span class="badge active"><span class="dot"></span>Active</span></div>
+            <p class="mission">Watches comments on all platforms.</p>
+            <div class="cadence"><span>9 AM &amp; 9 PM PT</span><span>IG · FB · TikTok · YouTube</span></div>
+            <h4>Duties</h4>
+            <ul>
+              <li><b>Replies</b> to thanks &amp; simple questions</li>
+              <li><b>Holds for David</b> sensitive topics</li>
+              <li><b>Flags</b> spam &amp; hate</li>
+              <li><b>Logs</b> every thread</li>
+            </ul>
+            <div class="now"><b>Now:</b> Tue 9 PM — no new comments on IG, FB, TikTok. 25 logged.</div>
+          </article>
+          <article class="emp">
+            <div class="emp-head"><div><h3>Outreach Manager</h3><div class="emp-role">Side chat · Nov 24</div></div><span class="badge active"><span class="dot"></span>Active</span></div>
+            <p class="mission">Gets the music heard beyond our pages.</p>
+            <div class="cadence"><span>Batches of 3</span><span>Weekday mornings</span><span>1 song / pitch</span></div>
+            <h4>Duties</h4>
+            <ul>
+              <li><b>8 lanes</b> — playlists, blogs, radio, churches, collabs</li>
+              <li><b>Engage first,</b> then DM</li>
+              <li><b>Keeps EPK</b> current</li>
+              <li><b>One follow-up</b> after 7 days</li>
+            </ul>
+            <div class="now"><b>Now:</b> 13 targets ready. Paid needs David's OK.</div>
+          </article>
+          <article class="emp">
+            <div class="emp-head"><div><h3>Analytics Manager</h3><div class="emp-role">Side chat · Nov 24</div></div><span class="badge new">New hire</span></div>
+            <p class="mission">Measures results, picks the daily winner.</p>
+            <div class="cadence"><span>Daily 9 AM PT</span><span>First pick Fri Nov 27</span><span>Win floor: 5</span></div>
+            <h4>Duties</h4>
+            <ul>
+              <li><b>Pulls numbers</b> across 4 platforms</li>
+              <li><b>Judges</b> on sends, saves, comments</li>
+              <li><b>Picks winner</b> + drafts cross-post</li>
+              <li><b>Feeds</b> Live Numbers</li>
+            </ul>
+            <div class="now"><b>Now:</b> Baseline done Tue. Next run Wed 9 AM.</div>
+          </article>
+        </div>
+      </section>
+
+      <!-- WEEK BOARD -->
+      <section id="week">
+        <div class="sec-head"><h2>Week 1 · The ALL IN Push</h2><span class="note">Nov 21–27 · Tap a day</span></div>
+        <div class="week" id="weekgrid" role="group" aria-label="Week 1 days"></div>
+        <div class="day-detail" id="dayDetail" hidden></div>
+      </section>
+
+      <!-- TESTING GROUND -->
+      <section id="model">
+        <div class="sec-head"><h2>The Testing Ground</h2><span class="note">Starts Thu Nov 26</span></div>
+        <div class="funnel">
+          <div class="fstep">
+            <div class="step-n">STEP 1 · TIKTOK</div>
+            <h3>Three clips compete daily</h3>
+            <p>3 clips per song compete on TikTok.</p>
+            <div class="vibes"><span>Classic cinematic</span><span>Beautiful real scenery</span><span>Raw &amp; intimate</span></div>
+          </div>
+          <div class="farrow" aria-hidden="true">→</div>
+          <div class="fstep">
+            <div class="step-n">STEP 2 · ANALYTICS</div>
+            <h3>The signal picks the winner</h3>
+            <p>Judged on its signal — sends, sound uses, comments/saves, duets. Win = 5+, best of day. Verdict 48h.</p>
+          </div>
+          <div class="farrow" aria-hidden="true">→</div>
+          <div class="fstep">
+            <div class="step-n">STEP 3 · 8 PM CROSS-POST</div>
+            <h3>Only winners travel</h3>
+            <p>Winner only cross-posts to IG, FB, YouTube next day 8 PM.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- CATALOG -->
+      <section id="catalog">
+        <div class="sec-head"><h2>The Catalog</h2><span class="note">47 songs · Tap a song</span></div>
+        <div class="cat-tools">
+          <input type="search" id="catSearch" placeholder="Search a song title…" aria-label="Search songs by title" />
+          <select id="catAlbum" aria-label="Filter by album">
+            <option value="all">All albums · 47 songs</option>
+            <option value="ALL IN">ALL IN · 12 songs</option>
+            <option value="The FAMILIAVERSE">The FAMILIAVERSE · 13 songs</option>
+            <option value="A.I.M.">A.I.M. · 13 songs</option>
+            <option value="Fresh Fire">Fresh Fire · 6 songs</option>
+            <option value="Revealed Life">Revealed Life · 3 songs</option>
+          </select>
+        </div>
+        <div class="feel-chips" id="feelChips" role="group" aria-label="Filter by feel"></div>
+        <p id="catCount" style="color:var(--muted);font-size:13.5px;margin:10px 0 0;" aria-live="polite"></p>
+        <div class="song-grid" id="songGrid" style="margin-top:14px;"></div>
+        <div class="song-detail" id="songDetail" hidden></div>
+        <div class="albums">
+          <div class="album"><div class="ano">ALBUM 01</div><h3>ALL IN</h3><div class="acount">12 songs</div><div class="bar"><i class="pub"></i></div><div class="astat pub">Published</div></div>
+          <div class="album"><div class="ano">ALBUM 02</div><h3>The FAMILIAVERSE</h3><div class="acount">13 songs</div><div class="bar"><i class="pub"></i></div><div class="astat pub">Published</div></div>
+          <div class="album"><div class="ano">ALBUM 03</div><h3>A.I.M.</h3><div class="acount">13 songs</div><div class="bar"><i class="pub"></i></div><div class="astat pub">Published</div></div>
+          <div class="album"><div class="ano">ALBUM 04</div><h3>Fresh Fire · WALK UP</h3><div class="acount">6 songs</div><div class="bar"><i class="prod"></i></div><div class="astat prod">In production</div></div>
+          <div class="album"><div class="ano">SPECIAL SERIES</div><h3>Revealed Life</h3><div class="acount">3 songs</div><div class="bar"><i class="making"></i></div><div class="astat making">In the making</div></div>
+          <div class="album"><div class="ano">ALSO IN THE VAULT</div><h3>Cross Company Kids · Brand Assets</h3><div class="acount">Kids' music &amp; brand files</div><div class="bar"><i class="prod"></i></div><div class="astat prod">Growing</div></div>
+        </div>
+        <div class="truth"><b>Source of truth:</b> Notion <b>CCC Operating System</b> (Songs DB). Drive holds audio &amp; artwork.</div>
+      </section>
+
+      <!-- COMMENTS -->
+      <section id="comments">
+        <div class="sec-head"><h2>Latest Comments</h2><span class="note">Checked Tue Nov 24, 9 PM</span></div>
+        <div class="comments">
+          <div class="comment">
+            <div class="chead"><span class="cwho">Matt, David &amp; CCC</span><span class="cplat">YouTube · Shorts thread</span><span class="csong">Puzzle Pieces hero Short · live this week</span></div>
+            <div class="ctext">Live thread: Matt, David &amp; CCC in conversation.</div>
+            <div class="creply"><b>Reply sent:</b> <span class="sent">“AMEN”</span></div>
+          </div>
+          <div class="comment">
+            <div class="chead"><span class="cwho">@thabatacarvalho8139</span><span class="cplat">YouTube</span><span class="csong">Close to Kin (Lyrics)</span></div>
+            <div class="ctext">“My favorite song 🎉”</div>
+            <div class="creply"><b>Handling:</b> <span class="queued">Logged · Queued for reply</span></div>
+          </div>
+          <div class="comment">
+            <div class="chead"><span class="cwho">@donaldson1274</span><span class="cplat">YouTube</span><span class="csong">The Least Of These (Lyrics)</span></div>
+            <div class="ctext">“Matthew 25:40 ❤️”</div>
+            <div class="creply"><b>Handling:</b> <span class="queued">Logged · Queued</span></div>
+          </div>
+          <div class="comment">
+            <div class="chead"><span class="cwho">Cody Brautigan</span><span class="cplat">Instagram</span><span class="csong">Granola BARS reel · Mar 21</span></div>
+            <div class="ctext">“Fire bro keep it up”</div>
+            <div class="creply"><b>Handling:</b> Draft ready, not sent: “Appreciate you, bro. More coming this week, stay with us.”</div>
+          </div>
+          <div class="comment">
+            <div class="chead"><span class="cwho">Nayda Arcos</span><span class="cplat">Instagram</span><span class="csong">One Day Outta Seven reel · Apr 6</span></div>
+            <div class="ctext">“Me encantó..!!! ♥️♥️♥️♥️”</div>
+            <div class="creply"><b>Handling:</b> Logged · No reply yet</div>
+          </div>
+          <div class="comment">
+            <div class="chead"><span class="cwho">gloriacarr47</span><span class="cplat">TikTok</span><span class="csong">Mar 19 video</span></div>
+            <div class="ctext">“🥰🥰🥰”</div>
+            <div class="creply"><b>Reply sent:</b> <span class="sent">“🫶” · Mar 21</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CHANNELS -->
+      <section id="channels">
+        <div class="sec-head"><h2>Channels &amp; Distribution</h2><span class="note">crosscompanycrew.com</span></div>
+        <div class="channels">
+          <div class="chan"><h3>TikTok</h3><div class="handle">@cross.company.crew · 17 followers</div><p>Testing ground · 3 posts/day</p></div>
+          <div class="chan"><h3>Instagram</h3><div class="handle">@cross.company.crew · 12 followers</div><p>Winner at 8 PM + carousels</p></div>
+          <div class="chan"><h3>Facebook</h3><div class="handle">Cross Company Crew Page</div><p>Daily winner + community · Personal: drafts only</p></div>
+          <div class="chan"><h3>YouTube</h3><div class="handle">Shorts · 60 subscribers</div><p>Winning Shorts + 37 lyric videos</p></div>
+        </div>
+      </section>
+
+      <!-- DECISIONS -->
+      <section id="decisions">
+        <div class="sec-head"><h2>On the Board</h2><span class="note">Tap Approve, Hold or Decline</span></div>
+        <div class="split">
+          <div class="box">
+            <h3>Open decisions</h3>
+            <div class="decision" data-decision="Test 3 intro: who records it, and which line">
+              <div class="tt"><span>Test 3 intro · The Least Of These</span><span class="due">Needed<br />before Thu</span></div>
+              <div class="td">Thu 7:30 AM hero needs a 5-sec spoken intro. Open: who records it + which line.</div>
+              <div class="btnrow"><button class="btn small" type="button" data-call="Approve">Approve</button><button class="btn small red-ghost" type="button" data-call="Hold">Hold</button><button class="btn small red-ghost" type="button" data-call="Decline">Decline</button></div>
+              <div class="dstate" aria-live="polite"></div>
+            </div>
+            <div class="decision" data-decision="Facebook and Instagram whitelist via DistroKid">
+              <div class="tt"><span>DistroKid whitelist · Facebook &amp; Instagram</span><span class="due">Open</span></div>
+              <div class="td">Whitelist CCC on Meta so our music stops getting flagged. YouTube claims stay.</div>
+              <div class="btnrow"><button class="btn small" type="button" data-call="Approve">Approve</button><button class="btn small red-ghost" type="button" data-call="Hold">Hold</button><button class="btn small red-ghost" type="button" data-call="Decline">Decline</button></div>
+              <div class="dstate" aria-live="polite"></div>
+            </div>
+            <div class="decision-logbar">
+              <p id="decisionSummary"><b>No calls recorded yet.</b> Your Approve, Hold and Decline taps collect here.</p>
+              <div class="btnrow"><button class="btn small ghost" type="button" id="copyDecisions">Copy my calls for Muse</button></div>
+            </div>
+            <div class="task" style="margin-top:16px;">
+              <div class="tick"></div>
+              <div><div class="tt">AI-label wording for captions</div><div class="td">Open — nothing ships until settled.</div></div>
+              <div class="due">Open</div>
+            </div>
+            <div class="task">
+              <div class="tick"></div>
+              <div><div class="tt">TikTok Artist Account claim</div><div class="td">Claim via Artist Hub.</div></div>
+              <div class="due">Open</div>
+            </div>
+            <div class="task">
+              <div class="tick"></div>
+              <div><div class="tt">First cartoon-style test slot</div><div class="td">Bonus clip is live. First scheduled slot is David's pick.</div></div>
+              <div class="due">Open</div>
+            </div>
+          </div>
+          <div class="box">
+            <h3>House rules</h3>
+            <div class="rule"><span class="rn">01</span><span><b>Nothing publishes without David's approval.</b></span></div>
+            <div class="rule"><span class="rn">02</span><span><b>Lyrics from Notion only,</b> verified verbatim.</span></div>
+            <div class="rule"><span class="rn">03</span><span><b>Every clip covers its full chorus.</b></span></div>
+            <div class="rule"><span class="rn">04</span><span><b>Captions sound like two friends,</b> not a brand.</span></div>
+            <div class="rule"><span class="rn">05</span><span><b>Outreach is personal</b> — 1 song, David approves the words.</span></div>
+            <div class="rule"><span class="rn">06</span><span><b>Check Studio</b> before trusting a label.</span></div>
+            <div class="rule"><span class="rn">07</span><span><b>Content ID claims on our music are fine</b> — leave them.</span></div>
+            <div class="rule"><span class="rn">08</span><span><b>A test wins at 5,</b> judged at 48h.</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- BROTHER TALK -->
+      <section id="brothertalk">
+        <div class="sec-head"><h2>Brother Talk</h2><span class="note">Shared board · Walk Up: catalog only, no promo yet</span></div>
+        <div class="board-frame-wrap">
+          <iframe class="board-frame" id="boardFrame" src="https://script.google.com/macros/s/AKfycbwYusBuwV2EiiOaqi1GFrYjNqYQhheND2XeQgmLqiAuKcQeBbcYRvgKrwnA7H0n56XfeA/exec" title="Brother Talk board — David and Matt" loading="lazy"></iframe>
+        </div>
+      </section>
+
+      <footer>
+        <span>Cross Company Crew · Die daily. Live forever. · Hip-hop first, every sound in faith.</span>
+        <span class="mono">Snapshot Tue Nov 24 · Next Wed 9 AM PT</span>
+      </footer>
+    </div>
+
+    <script>
+      (function () {
+        var TZ = 'America/Los_Angeles';
+        /* ---------- Clock + daily line ---------- */
+        var clockEl = document.getElementById('clock');
+        var dateEl = document.getElementById('dateline');
+        var fmtTime = new Intl.DateTimeFormat('en-US', { timeZone: TZ, hour: 'numeric', minute: '2-digit', second: '2-digit', hour12: true });
+        var fmtDate = new Intl.DateTimeFormat('en-US', { timeZone: TZ, weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+        var fmtKey = new Intl.DateTimeFormat('en-CA', { timeZone: TZ, year: 'numeric', month: '2-digit', day: '2-digit' });
+        var DAILY = {
+          '2026-11-21': 'Week theme: trust. The pieces fit because He is holding them.',
+          '2026-11-22': 'Week theme: gratitude. Drip by drip, He has never missed a day.',
+          '2026-11-23': 'Week theme: rest. One day out of seven is His, and so are we.',
+          '2026-11-24': 'Week theme: rerouted. What we called a detour, He called grace.',
+          '2026-11-25': 'Week theme: standing in the gap. Somebody\u2019s healing is keeping somebody else on their feet.',
+          '2026-11-26': 'Week theme: the least of these. Thanksgiving, counted from the bottom up.',
+          '2026-11-27': 'Week theme: home. Home is her name, and we are almost there.'
+        };
+        function tickClock() {
+          var now = new Date();
+          clockEl.textContent = fmtTime.format(now);
+          dateEl.textContent = fmtDate.format(now);
+          var key = fmtKey.format(now);
+          var line = DAILY[key] || 'Two brothers. One mission. Die daily. Live forever.';
+          document.getElementById('dailyLine').textContent = 'Today: ' + line;
+        }
+        tickClock(); setInterval(tickClock, 1000);
+
+        /* ---------- Countdowns ---------- */
+        function ptParts(d) {
+          var parts = new Intl.DateTimeFormat('en-US', { timeZone: TZ, hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: false }).formatToParts(d);
+          var o = {};
+          for (var i = 0; i < parts.length; i++) o[parts[i].type] = parseInt(parts[i].value, 10);
+          if (o.hour === 24) o.hour = 0;
+          return o;
+        }
+        function fmtDur(ms) {
+          if (ms < 0) ms = 0;
+          var s = Math.floor(ms / 1000);
+          var d = Math.floor(s / 86400); s -= d * 86400;
+          var h = Math.floor(s / 3600); s -= h * 3600;
+          var m = Math.floor(s / 60); s -= m * 60;
+          function p(n) { return (n < 10 ? '0' : '') + n; }
+          if (d > 0) return d + 'd ' + p(h) + ':' + p(m) + ':' + p(s);
+          return p(h) + ':' + p(m) + ':' + p(s);
+        }
+        var winnerPick = new Date('2026-11-27T09:00:00-08:00').getTime();
+        var weekEnd = new Date('2026-11-28T00:00:00-08:00').getTime();
+        function tickCountdowns() {
+          var now = new Date();
+          var p = ptParts(now);
+          var secsToday = p.hour * 3600 + p.minute * 60 + p.second;
+          var slots = [7 * 3600 + 1800, 12 * 3600 + 1800, 19 * 3600 + 1800];
+          var labels = ['7:30 AM', '12:30 PM', '7:30 PM'];
+          var nextMs = null, nextLbl = '';
+          for (var i = 0; i < slots.length; i++) {
+            if (slots[i] > secsToday) { nextMs = (slots[i] - secsToday) * 1000; nextLbl = labels[i] + ' PT today'; break; }
+          }
+          if (nextMs === null) { nextMs = (86400 - secsToday + slots[0]) * 1000; nextLbl = '7:30 AM PT tomorrow'; }
+          document.getElementById('cdNextPost').textContent = fmtDur(nextMs);
+          document.getElementById('cdNextPostSub').textContent = 'Next slot: ' + nextLbl + ' \u00B7 cross-post 8 PM';
+          var w = winnerPick - now.getTime();
+          document.getElementById('cdWinner').textContent = w > 0 ? fmtDur(w) : 'Pick is due \u2014 check the 9 AM run';
+          var we = weekEnd - now.getTime();
+          document.getElementById('cdWeek').textContent = we > 0 ? fmtDur(we) : 'Week 1 complete';
+        }
+        tickCountdowns(); setInterval(tickCountdowns, 1000);
+
+        /* ---------- Week board ---------- */
+        var TT = 'https://www.tiktok.com/@cross.company.crew/video/';
+        var PROFILE = 'https://www.tiktok.com/@cross.company.crew';
+        var DAYS = [
+          { date: '2026-11-21', dow: 'Sat', num: 21, st: ['live', 'Live'], song: 'Puzzle Pieces', detail: 'Day 1 hero. The one that set the tone for the whole week.', slots: ['TT 12:30P hero', 'Cross-post 8 PM'],
+            note: 'Only the midday hero published on Day 1. The morning cinematic and evening avatar test never went out, confirmed in TikTok Studio.',
+            clips: [
+              { time: '12:30 PM \u00B7 Hero', vibe: 'Beautiful real scenery', title: 'Puzzle Pieces', img: 'assets/a-de0ff762d40f.jpg', cap: 'Caption direction: the pieces of a hard season fitting back together, and an open door for anyone still in the middle of theirs.', stats: 'TikTok 34 views \u00B7 avg view 4.39s, the longest hold of the week \u00B7 YouTube Short 65 views, 4 comments', tt: TT + '7710714229614972173', yt: 'https://youtube.com/shorts/QRUrBG2jWE0', pin: ['yes', 'Pinned comment: posted'] },
+              { time: '8:00 PM \u00B7 Cross-post', vibe: 'Hero across IG \u00B7 FB \u00B7 YT', title: 'Puzzle Pieces', img: 'assets/a-de0ff762d40f.jpg', cap: 'The same hero carried to the other three platforms under the old model.', stats: 'Facebook 43 views \u00B7 Instagram 3 views \u00B7 YouTube thread is live in the comments feed below', tt: TT + '7710714229614972173', yt: 'https://youtube.com/shorts/QRUrBG2jWE0', pin: ['yes', 'Pinned comment: posted'] }
+            ] },
+          { date: '2026-11-22', dow: 'Sun', num: 22, st: ['live', 'Live'], song: 'Drip, Drip, Drizzle \u00B7 Reshuffle the Deck', detail: 'Fully scheduled and posted, pinned comment up.', slots: ['TT 7:30A \u00B7 12:30P \u00B7 7:30P', 'Hero cross-post 8 PM'],
+            note: 'Reshuffle the Deck, the evening intimate clip, quietly pulled the most TikTok views of Days 1\u20133: 93.',
+            clips: [
+              { time: '7:30 AM', vibe: 'Classic cinematic', title: 'Drip, Drip, Drizzle', img: 'assets/a-f3bf8f1eb78d.jpg', cap: 'Caption direction: steady provision, drip by drip, and gratitude for the days it never missed.', stats: 'TikTok 47 views \u00B7 avg view 2.32s', tt: TT + '7710884631108799757', pin: ['yes', 'Pinned comment: posted with the hero'] },
+              { time: '12:30 PM \u00B7 Hero', vibe: 'Beautiful real scenery', title: 'Drip, Drip, Drizzle', img: 'assets/a-f3bf8f1eb78d.jpg', cap: 'Caption direction: the hero cut of the day, carried to all four platforms at 8 PM.', stats: 'TikTok 68 views \u00B7 Facebook hero 75 views, the FB best of the week \u00B7 YouTube Short 54 views', tt: TT + '7710885064808221983', yt: 'https://youtube.com/shorts/_z2LcGLtwiM', pin: ['yes', 'Pinned comment: posted'] },
+              { time: '7:30 PM', vibe: 'Raw & intimate', title: 'Reshuffle the Deck', img: 'assets/a-f3bf8f1eb78d.jpg', cap: 'Caption direction: when the hand you were dealt gets reshuffled by grace.', stats: 'TikTok 93 views \u00B7 the most-viewed TikTok clip of Days 1\u20133', tt: TT + '7710885410175487262', pin: ['yes', 'Pinned comment: posted with the hero'] }
+            ] },
+          { date: '2026-11-23', dow: 'Mon', num: 23, st: ['live', 'Live'], song: 'One Day Outta Seven \u00B7 In Key', detail: 'Three TikTok slots plus the 8 PM hero across IG, FB, and YouTube.', slots: ['TT 7:30A \u00B7 12:30P \u00B7 7:30P', 'Hero cross-post 8 PM'],
+            note: 'Rest Is Holy was the day\u2019s theme: one day out of seven belongs to God.',
+            clips: [
+              { time: '7:30 AM', vibe: 'Classic cinematic', title: 'One Day Outta Seven', img: 'assets/a-de0ff762d40f.jpg', cap: 'Caption direction: rest is holy, and the week starts by giving a day back.', stats: 'TikTok 60 views \u00B7 avg view 1.78s', tt: TT + '7711152172922195230', pin: ['yes', 'Pinned comment: posted with the hero'] },
+              { time: '12:30 PM \u00B7 Hero', vibe: 'Beautiful real scenery', title: 'One Day Outta Seven', img: 'assets/a-de0ff762d40f.jpg', cap: 'Caption direction: the hero cut, cross-posted at 8 PM.', stats: 'TikTok 45 views \u00B7 YouTube Short 37 views, 1 comment \u00B7 Facebook 9 views', tt: TT + '7711152235589242143', yt: 'https://youtube.com/shorts/zapto478kAw', pin: ['yes', 'Pinned comment: posted'] },
+              { time: '7:30 PM', vibe: 'Raw & intimate', title: 'In Key', img: 'assets/a-1c7a5c634733.jpg', cap: 'Caption direction: getting your life back in key with the One who wrote it.', stats: 'TikTok 76 views \u00B7 avg view 1.98s', tt: TT + '7711152479307582750', pin: ['yes', 'Pinned comment: posted with the hero'] }
+            ] },
+          { date: '2026-11-24', dow: 'Tue', num: 24, st: ['live', 'Live'], song: 'Rerouted \u00B7 Private Pain', detail: 'Private Pain took the evening hero slot. Test 2 rode the midday Rerouted clip.', slots: ['TT 7:30A \u00B7 12:30P \u00B7 7:30P', 'Hero cross-post 8 PM'],
+            note: 'Day 4 TikTok view counts were still processing at the Nov 24 collection (0 views, real play time), so nothing from this day is judged until the Wed 9 AM recheck. Captions below are the approved two-friends rewrites, word for word.',
+            clips: [
+              { time: '7:30 AM', vibe: 'Classic cinematic', title: 'Rerouted', img: 'assets/a-2bd5d734c696.jpg', cap: '\u201CWe wrote this one for the mornings when the plan already fell apart before breakfast. If your road broke this week, you are not lost. You are being rerouted. What is He rerouting for you right now?\u201D', stats: 'TikTok \u00B7 play time counting, views processing', tt: TT + '7711643824224832799', pin: ['yes', 'Pinned comment: posted with the hero'] },
+              { time: '12:30 PM \u00B7 Test 2', vibe: 'Beautiful real scenery \u00B7 sound reuse test', title: 'Rerouted', img: 'assets/a-2bd5d734c696.jpg', cap: '\u201CThis one kept us going on the long way home. What we called a detour, He called grace. If God rerouted you too, use this sound and tell us where. We want to hear it.\u201D', stats: 'TikTok \u00B7 live and confirmed published 12:30 PM \u00B7 sound uses not shown in Studio yet', tt: TT + '7711644229671341342', pin: ['yes', 'Pinned comment: the sound-use invitation, posted'] },
+              { time: '7:30 PM \u00B7 Hero', vibe: 'Raw & intimate', title: 'Private Pain', img: 'assets/a-a6ec29f1d20e.jpg', cap: '\u201CWe wrote this one for the pain nobody sees. The kind you carry quiet and call strength. We did that too, until we learned healing is not quitting. If this is your story tonight, comment STILL STANDING. We are standing with you.\u201D', stats: 'YouTube Short 15 views, 1 comment, 45.4% stayed to watch, the best stay rate of the week', tt: TT + '7711644461129927950', yt: 'https://youtube.com/shorts/Wqm_5Mqq2mA', pin: ['yes', 'Pinned comment: \u201CComment STILL STANDING if this one is yours.\u201D'] },
+              { time: '12:14 PM \u00B7 Bonus', vibe: 'Cartoon brothers', title: 'Puzzle Pieces (cartoon bonus)', img: 'assets/a-87c09a9e76b3.jpg', cap: 'The cartoon test: the best character read yet, sunset alley, same Puzzle Pieces chorus. Already live on TikTok.', stats: 'TikTok \u00B7 bonus post, outside the day\u2019s three slots', tt: TT + '7711833935554120990', pin: ['pending', 'Pinned comment: n/a, bonus post'] }
+            ] },
+          { date: '2026-11-25', dow: 'Wed', num: 25, st: ['sched', 'Scheduled'], song: 'Alpha Walk Last \u00B7 Human Shield \u00B7 Fashion Is A Verb', detail: 'Human Shield is the hero and Test 1. Bonus: the 54321 carousel at 3 PM.', slots: ['TT 7:30A \u00B7 12:30P \u00B7 7:30P', 'Carousel 3 PM \u00B7 Cross-post 8 PM'],
+            note: 'Fully scheduled and verified in TikTok Studio. Human Shield stays a story clip: the figures are story characters, not the brothers.',
+            clips: [
+              { time: '7:30 AM', vibe: 'Classic cinematic', title: 'Alpha Walk Last', img: 'assets/a-6c4db5d4af8d.jpg', cap: 'Caption direction: walking last on purpose, the Alpha does not need the front of the line.', stats: 'Scheduled \u00B7 TikTok link goes live at the slot', tt: PROFILE, pin: ['scheduled', 'Pinned comment: rides with the 8 PM hero'] },
+              { time: '12:30 PM \u00B7 Hero \u00B7 Test 1', vibe: 'Shield version \u00B7 sends test \u00B7 four friends standing shoulder to shoulder like a wall on the road at dawn, sheltering a fifth friend seated by the car', title: 'Human Shield', img: 'assets/a-cd176b7654e0.jpg', cap: '\u201CSend this to the one standing in the gap for you.\u201D Judged on sends, floor of 5, verdict at 48 hours.', stats: 'Shield version approved by David \u00B7 the one going out at 12:30 PM \u00B7 hero cross-post 8 PM \u00B7 YouTube Short scheduled', tt: PROFILE, yt: 'https://youtube.com/shorts/5vhI6BiVjXo', pin: ['scheduled', 'Pinned comment: \u201CWhose story kept you on your feet?\u201D at 8:05 PM'] },
+              { time: '3:00 PM \u00B7 Bonus', vibe: '54321 carousel', title: 'Five songs that carried us', img: 'assets/a-87c09a9e76b3.jpg', cap: '5 songs, 4 lines we live by, 3 things God rerouted, 2 brothers, 1 mission: Die daily. Live forever.', stats: 'Scheduled in TikTok Studio \u00B7 six slides, approved caption', tt: PROFILE, pin: ['scheduled', 'Pinned comment: n/a, carousel'] },
+              { time: '7:30 PM', vibe: 'Raw & intimate', title: 'Fashion Is A Verb', img: 'assets/a-c7dfb76b804b.jpg', cap: 'Caption direction: faith is something you wear out the door, not something you hang up.', stats: 'Scheduled \u00B7 TikTok link goes live at the slot', tt: PROFILE, pin: ['scheduled', 'Pinned comment: rides with the 8 PM hero'] }
+            ] },
+          { date: '2026-11-26', dow: 'Thu \u00B7 Thanksgiving', num: 26, st: ['next', 'New model starts'], song: 'The Least Of These \u00B7 Close to Kin \u00B7 Four Quarters', detail: 'First TikTok-only day: three clips compete, the winner earns Friday\u2019s 8 PM cross-post.', slots: ['TT 7:30A \u00B7 12:30P \u00B7 7:30P', 'Tests 3 & 4 run today'],
+            note: 'Test 3 needs the intro call on the Decisions board before this day can be built.',
+            clips: [
+              { time: '7:30 AM \u00B7 Hero \u00B7 Test 3', vibe: 'Spoken intro + silhouette chorus', title: 'The Least Of These (When Did We?)', img: 'assets/a-1c7a5c634733.jpg', cap: 'Opens with a 5-second real-voice intro, back to camera, then the chorus. Judged on comments with substance plus saves, floor of 5.', stats: 'In production \u00B7 intro line still open, see Decisions', tt: PROFILE, pin: ['pending', 'Pinned comment: planned for the 8 PM winner post'] },
+              { time: '12:30 PM', vibe: 'Midday test slot', title: 'Close to Kin', img: 'assets/a-de0ff762d40f.jpg', cap: 'Caption direction: kinship that runs deeper than blood, the family God builds.', stats: 'In production', tt: PROFILE, pin: ['pending', 'Pinned comment: planned'] },
+              { time: '7:30 PM \u00B7 Test 4', vibe: 'Split-screen duet invite', title: 'Four Quarters (Closer Than A Brother)', img: 'assets/a-1c7a5c634733.jpg', cap: 'Golden David left, red Matt right, end card: \u201CDuet the second half.\u201D Judged on duets and stitches.', stats: 'In production \u00B7 the brotherhood song gets the brotherhood format', tt: PROFILE, pin: ['pending', 'Pinned comment: planned'] }
+            ] },
+          { date: '2026-11-27', dow: 'Fri', num: 27, st: ['next', 'Coming up'], song: 'Home Is Her Name', detail: 'The home song closes the week, moved off Thanksgiving on purpose. First winner pick lands this morning.', slots: ['TT 7:30A \u00B7 12:30P \u00B7 7:30P', 'Winner cross-post 8 PM'],
+            note: 'Control day: the map runs as planned so the test days can be compared against a clean day.',
+            clips: [
+              { time: '7:30 AM', vibe: 'Classic cinematic', title: 'More for You, Son', img: 'assets/a-de0ff762d40f.jpg', cap: 'Caption direction: a father\u2019s heart, and more waiting than we knew to ask for.', stats: 'In production', tt: PROFILE, pin: ['pending', 'Pinned comment: planned'] },
+              { time: '12:30 PM \u00B7 Hero', vibe: 'Beautiful real scenery', title: 'Home Is Her Name', img: 'assets/a-de0ff762d40f.jpg', cap: 'Caption direction: the week\u2019s arc lands at home. Trust to home, seven days.', stats: 'In production \u00B7 closes Week 1', tt: PROFILE, pin: ['pending', 'Pinned comment: planned'] },
+              { time: '7:30 PM', vibe: 'Raw & intimate', title: 'Luz Da Casa', img: 'assets/a-de0ff762d40f.jpg', cap: 'Caption direction: light of the house, the last word of the week is light.', stats: 'In production', tt: PROFILE, pin: ['pending', 'Pinned comment: planned'] }
+            ] }
+        ];
+        var weekGrid = document.getElementById('weekgrid');
+        var dayDetail = document.getElementById('dayDetail');
+        var todayKey = fmtKey.format(new Date());
+        DAYS.forEach(function (d, idx) {
+          var b = document.createElement('button');
+          b.type = 'button'; b.className = 'day'; b.setAttribute('aria-expanded', 'false');
+          if (d.date === todayKey) b.classList.add('today');
+          b.innerHTML = '<div class="dow">' + d.dow + (d.date === todayKey ? ' \u00B7 Today' : '') + '</div><div class="dnum">' + d.num + '</div>' +
+            '<span class="st ' + d.st[0] + '">' + d.st[1] + '</span>' +
+            '<div class="song">' + d.song + '</div><div class="detail">' + d.detail + '</div>' +
+            '<div class="slots">' + d.slots.map(function (s) { return '<span>' + s + '</span>'; }).join('') + '</div>' +
+            '<span class="expand-hint">Open the day \u2193</span>';
+          b.addEventListener('click', function () { openDay(idx, b, false); });
+          weekGrid.appendChild(b);
+        });
+        var openIdx = -1;
+        function openDay(idx, btn, silent) {
+          var buttons = weekGrid.querySelectorAll('.day');
+          if (openIdx === idx) { dayDetail.hidden = true; openIdx = -1; buttons[idx].setAttribute('aria-expanded', 'false'); return; }
+          openIdx = idx;
+          buttons.forEach(function (x, i) { x.setAttribute('aria-expanded', i === idx ? 'true' : 'false'); });
+          var d = DAYS[idx];
+          var html = '<div class="day-detail-head"><h3>' + d.dow + ' Nov ' + d.num + ' \u00B7 ' + d.song + '</h3><span class="st ' + d.st[0] + '">' + d.st[1] + '</span></div>' +
+            '<p style="padding:0 20px;color:var(--ink-2);font-size:14px;margin:4px 0 8px;">' + d.note + '</p><div class="clip-list">';
+          d.clips.forEach(function (c) {
+            html += '<div class="clip"><div class="thumb" style="background-image:url(\'' + c.img + '\')" role="img" aria-label="Cover frame for ' + c.title + '"></div><div>' +
+              '<div class="ctime">' + c.time + ' \u00B7 ' + c.vibe + '</div><h4>' + c.title + '</h4>' +
+              '<p class="cap">' + c.cap + '</p>' +
+              '<div class="meta"><span>' + c.stats + '</span>' +
+              '<a href="' + c.tt + '" target="_blank" rel="noopener">TikTok \u2197</a>' +
+              (c.yt ? '<a href="' + c.yt + '" target="_blank" rel="noopener">YouTube \u2197</a>' : '') +
+              '<span class="pin ' + c.pin[0] + '">' + c.pin[1] + '</span></div></div></div>';
+          });
+          html += '</div>';
+          dayDetail.innerHTML = html;
+          dayDetail.hidden = false;
+          if (!silent) dayDetail.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+        // Open today (or Day 5 during Week 1) by default
+        var startIdx = DAYS.findIndex(function (d) { return d.date === todayKey; });
+        if (startIdx < 0) startIdx = 4;
+        openDay(startIdx, weekGrid.querySelectorAll('.day')[startIdx], true);
+
+        /* ---------- Catalog ---------- */
+                var ALBUM_INFO = { 'ALL IN': 'Album 01 · Published', 'The FAMILIAVERSE': 'Album 02 · Published', 'A.I.M.': 'Album 03 · Published', 'Fresh Fire': 'Album 04 · WALK UP · In production', 'Revealed Life': 'Special series · In the making' };
+        var SONGS = [
+          { t: 'Drip, Drip, Drizzle', album: 'ALL IN', style: 'Christian Hip Hop', hook: 'Yeah… / Faith in motion / Let it rain / Drip, drip, drizzle, let the blessing pour', desc: 'A faith-driven anthem inspired by the discipline, perseverance, and belief of an elite shooter, using basketball and “Chef” imagery to reflect how God produces…', note: 'Steady provision, drip by drip. Gratitude for the God who has never missed a day.', feel: 'Gratitude', days: 'Day 2 · Sun Nov 22 · AM + hero', stats: 'TikTok 47 + 68 views · Facebook hero 75 views, the FB best of Week 1 · YouTube Short 54 views', tt: TT + '7710885064808221983', yt: 'https://youtube.com/shorts/_z2LcGLtwiM' },
+          { t: 'Reshuffle the Deck', album: 'ALL IN', style: 'Christian Hip Hop', hook: '', desc: 'A reflective faith-centered song about anxiety, pressure, and the moment of surrender where control is released and God is trusted to restore order and…', note: 'The hand you were dealt is not the hand you have to keep. Grace reshuffles.', feel: 'Trust', days: 'Day 2 · Sun Nov 22 · evening', stats: 'TikTok 93 views · most-viewed TikTok clip of Days 1–3', tt: TT + '7710885410175487262' },
+          { t: 'Sure Thing', album: 'ALL IN', style: 'Christian Hip Hop', hook: 'Yeah… / This ain’t chance / This is covenant / Paradise ain’t a gamble, it’s a sure thing', desc: 'A bold, faith-filled declaration about the certainty of salvation through Jesus, contrasting the gamble of the world with the finished work of the cross and the…' },
+          { t: 'Human Shield', album: 'ALL IN', style: 'Christian hip Hop', hook: 'Uhhh / Yeahh / Ta ra ta / Helping others succeed where you once failed', desc: 'A raw faith anthem about vulnerability as protection, using lived testimony to block the enemy and keep others from falling.', note: 'My healing keeps you on your feet. Send this to the one standing in the gap for you.', feel: 'Healing', days: 'Day 5 · Wed Nov 25 · hero (Test 1)', stats: 'Test 1: judged on sends, floor of 5 · hero cross-post 8 PM · pinned: “Whose story kept you on your feet?”', tt: PROFILE, yt: 'https://youtube.com/shorts/5vhI6BiVjXo' },
+          { t: 'Puzzle Pieces', album: 'ALL IN', style: 'Christian Hip Hop', hook: 'Life don’t come explained / But it comes arranged / Yeah, Ahh, Yeah / Life cuts twists and turns', desc: 'A reflective, faith-centered song about life’s twists, mystery, and connection, trusting Jesus as the Prince of every piece who brings purpose and completion…', note: 'The pieces of a hard season, fitted back together by the only hands that know the picture.', feel: 'Trust', days: 'Day 1 · Sat Nov 21 · hero', stats: 'TikTok hero 34 views, longest hold of the week (4.39s avg) · YouTube Short 65 views, 4 comments', tt: TT + '7710714229614972173', yt: 'https://youtube.com/shorts/QRUrBG2jWE0' },
+          { t: 'In Key', album: 'ALL IN', style: 'Christian Hip Hop – Jazz Mix', hook: 'Yeah… / Brushes on the snare / Bass walkin’ slow / Let it simmer', desc: 'A reflective hip-hop jazz worship piece about surrendering control, trusting God’s timing, and letting grace shape the rhythm of life, even when the melody…', note: 'A life tuned back to the key it was written in.', feel: 'Worship', days: 'Day 3 · Mon Nov 23 · evening', stats: 'TikTok 76 views · avg view 1.98s', tt: TT + '7711152479307582750' },
+          { t: 'One Day Outta Seven', album: 'ALL IN', style: 'Christian Hip Hop', hook: 'Slow the pace / Breathe again / He built rest / Into the plan', desc: 'A meditative song about breaking free from grind culture, rediscovering God’s rhythm, and choosing Sabbath rest as an act of trust, obedience, and renewal.', note: 'Rest is holy. One day out of seven belongs to God, and giving it back changes the other six.', feel: 'Rest', days: 'Day 3 · Mon Nov 23 · AM + hero', stats: 'TikTok 60 + 45 views · YouTube Short 37 views · Facebook 9 views', tt: TT + '7711152235589242143', yt: 'https://youtube.com/shorts/zapto478kAw' },
+          { t: 'Alpha Walk Last', album: 'ALL IN', style: 'Christian Melodic Hip-Hop with R&B', hook: 'Society hunts runts / At the back of the pack / So alpha wolves walk last / To avoid mistakes of the past', desc: 'A prophetic, hard-hitting anthem that dismantles false power systems, calls out hollow ambition, and reorders life around God-first purpose, humility…', note: 'Walking last on purpose. The Alpha does not need the front of the line.', feel: 'Perseverance', days: 'Day 5 · Wed Nov 25 · AM', stats: 'Scheduled 7:30 AM Wed', tt: PROFILE },
+          { t: 'Rerouted', album: 'ALL IN', style: 'Melody Funk', hook: 'He can move you / To the palace from the prison overnight / If you feel left out / Just know He always gets it right', desc: 'A faith-charged anthem about divine reversals, trusting God’s perspective over our own plans, and walking in victory that comes not from striving, but from…', note: 'What we called a detour, He called grace. The long way home is still the way home.', feel: 'Trust', days: 'Day 4 · Tue Nov 24 · AM + midday (Test 2)', stats: 'Test 2: judged on sound uses · midday clip confirmed live 12:30 PM · Day 4 counts recheck Wed 9 AM', tt: TT + '7711644229671341342' },
+          { t: 'Home Is Her Name', album: 'ALL IN', style: 'r&b pop with a strong reggae sound', hook: 'Before the roof / Before the frame / There was a foundation / With a name', desc: 'A reverent, story-driven song that honors the sacred weight of home, not as a structure of wood and walls, but as a living testimony of faith, family, sacrifice…', note: 'The week’s arc lands at home. Trust to home in seven days, and this is the door.', feel: 'Home', days: 'Day 7 · Fri Nov 27 · midday hero', stats: 'In production · closes Week 1, moved off Thanksgiving on purpose', tt: PROFILE },
+          { t: 'Private Pain', album: 'ALL IN', style: 'hip hop, orchestral, anthem', hook: 'Stand at attention / This isn’t condemnation / This is liberation / There’s a high-ranking hurt', desc: 'A militant, victorious declaration of healing and freedom, exposing hidden pain that keeps believers underperforming and announcing Christ’s decisive authority…', note: 'For the pain nobody sees, the kind you carry quiet and call strength. Healing is not quitting.', feel: 'Healing', days: 'Day 4 · Tue Nov 24 · evening hero', stats: 'YouTube Short 15 views, 45.4% stayed to watch, best stay rate of the week · pinned: STILL STANDING', tt: TT + '7711644461129927950', yt: 'https://youtube.com/shorts/Wqm_5Mqq2mA' },
+          { t: 'Sure Thing (Cinematic)', album: 'ALL IN', style: 'Cinematic Gospel, hip hop', hook: '', desc: 'A quiet, intimate reflection on meeting God in the stillness of early morning, choosing surrender over control, and grounding the day in faith before the world…' },
+          { t: 'Tab 13', album: 'The FAMILIAVERSE', note: 'This tab in the catalog doc has no title, description, or hook filled in yet, so it is listed exactly the way it appears in the doc.' },
+          { t: 'The Least Of These (When Did We?)', album: 'The FAMILIAVERSE', hook: 'He didn’t come loud / He didn’t come crowned / He came disguised / In the spaces we pass by', note: 'Matthew 25:40, lived out loud: the smallest kindness, done for Him. A listener already quoted the verse back at us on YouTube.', feel: 'Compassion', days: 'Day 6 · Thu Nov 26 · AM hero (Test 3)', stats: 'Test 3: judged on comments + saves · needs the spoken-intro call, see Decisions', tt: PROFILE },
+          { t: 'More for You, Son', album: 'The FAMILIAVERSE', style: 'Lo-fi Hip-Hop', hook: '', desc: 'A father’s prayer set to music. A promise to sacrifice, build, and endure so the next generation can rise higher, walk freer, and live unburdened by what came…', note: 'A father’s heart: there is more for you than you knew to ask for.', feel: 'Family', days: 'Day 7 · Fri Nov 27 · AM', stats: 'In production · control day', tt: PROFILE },
+          { t: 'Pop’s Culture', album: 'The FAMILIAVERSE', style: 'Backpacker Hip Hop', hook: 'Be chill and know / That I am NOT God / Be still and know / That HE is', desc: 'A sharp, backpacker-style hip-hop track that flips pop culture on its head, weaving dense wordplay and modern references into a Christ-centered worldview where…' },
+          { t: 'When God Was One of Us', album: 'The FAMILIAVERSE', style: 'Modern Christian Worship With Male And Female Voices And Some Light Hip Hop Mix', hook: '', desc: 'A theological, cinematic reflection on the incarnation, death, resurrection, and indwelling Spirit of Christ, tracing how Heaven stepped into flesh to reclaim…' },
+          { t: 'Close to Kin', album: 'The FAMILIAVERSE', style: 'Christian hip-hop blended with subtle Latin urban soul.', hook: '', desc: 'A bilingual, identity-centered declaration about daily faith, inheritance, and belonging, where scars reveal ownership, not shame, and true safety is found…', note: 'Kinship deeper than blood: the family God builds on purpose.', feel: 'Brotherhood', days: 'Day 6 · Thu Nov 26 · midday', stats: 'In production · a YouTube listener called the lyric version “My favorite song”', tt: PROFILE },
+          { t: 'Fashion Is A Verb', album: 'The FAMILIAVERSE', style: 'hip-hop and high energy rock and roll', hook: '', desc: 'A gritty faith anthem that confronts image, ego, and performative strength, calling believers back to action, humility, and obedience. This is conviction over…', note: 'Faith is something you wear out the door, not something you hang up at home.', feel: 'Identity', days: 'Day 5 · Wed Nov 25 · evening', stats: 'Scheduled 7:30 PM Wed', tt: PROFILE },
+          { t: 'Luz Da Casa', album: 'The FAMILIAVERSE', style: 'hip hop, pop, samba, tambourine', hook: '', desc: 'A bilingual anthem about keeping love warm enough to guide someone home. When hearts drift, light must remain. A fusion of hip hop, pop melody, and Brazilian…', note: 'Light of the house. The last word of Week 1 is light.', feel: 'Home', days: 'Day 7 · Fri Nov 27 · evening', stats: 'In production · control day', tt: PROFILE },
+          { t: 'Curly Cord Conversations', album: 'The FAMILIAVERSE', style: '80s nostalgic hip hop with retro drum machines and warm synth pads', hook: '', desc: 'A nostalgic 80s-inspired hip-hop reflection on analog love, cassette tapes, late-night phone calls, and raising kids in a digital world. Warm, reflective…' },
+          { t: 'Tabula Rasa', album: 'The FAMILIAVERSE', style: 'Future bass worship anthem with cinematic build and heavy drop', hook: '', desc: 'An explosive EDM and dubstep anthem about spiritual renewal and identity in Christ. Heavy drops, atmospheric build-ups, and hip hop verses declare freedom from…' },
+          { t: 'Four Quarters (Closer Than A Brother)', album: 'The FAMILIAVERSE', style: 'Boom bap hip hop with hard drums and scratch DJ sections for the hook', hook: '', desc: 'A classic boom bap hip-hop track about the difference between companions and true brotherhood. Inspired by Proverbs 18:24, the song reflects on loyalty…', note: 'Two brothers, one mic. The week’s brotherhood song, built as a duet invitation.', feel: 'Brotherhood', days: 'Day 6 · Thu Nov 26 · evening (Test 4)', stats: 'Test 4: judged on duets and stitches · split-screen, golden David and red Matt', tt: PROFILE },
+          { t: 'Sunshine and Moonlight', album: 'The FAMILIAVERSE', style: 'Boom bap hip hop', hook: '', desc: 'A reflective boom bap hip-hop song about marriage, family rhythms, and learning to move through life together even when your clocks don’t match…' },
+          { t: 'The Least Of These (When Did We?) [Country]', album: 'The FAMILIAVERSE', hook: 'He didn’t come loud / He didn’t come crowned / He came disguised / In the spaces we pass by', desc: 'A narrative, Scripture-rooted song inspired by Matthew 25:40, revealing how everyday acts of mercy toward the overlooked become direct encounters with Christ…' },
+          { t: 'Run It Straight', album: 'A.I.M.' },
+          { t: 'Bloodline', album: 'A.I.M.' },
+          { t: 'Rock Beneath', album: 'A.I.M.' },
+          { t: 'Impartial', album: 'A.I.M.' },
+          { t: 'First Place', album: 'A.I.M.' },
+          { t: 'Crater', album: 'A.I.M.' },
+          { t: 'Still Frequency', album: 'A.I.M.' },
+          { t: 'Did I Do That?', album: 'A.I.M.' },
+          { t: 'Love Letter Signed', album: 'A.I.M.' },
+          { t: 'I Remember Why', album: 'A.I.M.' },
+          { t: 'I’m In The Boat Too', album: 'A.I.M.' },
+          { t: 'Yes Men', album: 'A.I.M.', note: 'A yes to God that does not check the room first.', feel: 'Identity', days: 'Earlier catalog · YouTube lyric video', stats: 'YouTube lyric video in the channel’s 37-video library', tt: PROFILE },
+          { t: 'When We Meet In Heaven', album: 'A.I.M.', note: 'For the reunion grief cannot cancel.', feel: 'Hope', days: 'Earlier catalog · YouTube lyric video', stats: 'YouTube lyric video in the channel’s 37-video library', tt: PROFILE },
+          { t: 'Get Your Reps In', album: 'Fresh Fire', style: 'Hip Hop, Back-Packer Rap', hook: 'Go ahead / Swing again / I’ve got the chin / You won’t change the outcome', desc: 'Get Your Reps In is a gritty Christian backpack-rap track about training faith the way a fighter trains his body. Built around Scripture, discipline, endurance…' },
+          { t: 'Made To Shine', album: 'Fresh Fire', style: 'Boom-Bap, Gritty, Confessional, And Testimony-Driven', hook: 'I let the flesh get fed / Then complained when it got heavy / Let emotions take the wheel / Like my feelings knew where they were heading', desc: 'Made To Shine is a raw Christian hip-hop testimony about repentance, transformation, and learning to walk as salt and light. It reflects the shift from being…' },
+          { t: 'Somethin’ To Lose', album: 'Fresh Fire', style: 'Hip-Hop, Trap, Jazz', hook: 'I’ve got nothin’ to hide / I’ve got nothin’ to prove / But now that these boys are by my side / I’ve got somethin’ to lose', desc: 'Somethin’ To Lose is a reflective hip-hop track with trap bounce and jazzy soul, built around the shift from living for self to moving with purpose for the…' },
+          { t: 'All I Wanna Do Is Write (Right)', album: 'Fresh Fire', style: 'Boom Bap Hip-Hop Driven Beat, Deep 808 Hits, Electronic, Jazz, Funk, Hushed Whisper Rapping', hook: 'All I wanna do is write / Is that wrong / Stayin’ up all night / Losin’ sleep just to finish a song', desc: 'All I Wanna Do Is Write (Right) is a late-night Christian hip-hop track about choosing purpose over distraction and obedience over empty ambition. Built on…' },
+          { t: 'Sized (He Sees Me)', album: 'Fresh Fire', style: 'Boom Bap Hip Hop, Alt-Funk, Trap, Heavy Bass, Lo-Fi', hook: 'I’m a self-salving sore and / So I stop by the store and / Pick up Neosporin / ’Cause I rub folks the wrong way', desc: 'Sized (He Sees Me) is a black-and-white, boom-bap-driven hip-hop track built on wordplay, repentance, and transformation. It moves from self-awareness and messy…' },
+          { t: 'Wheel Man Business', album: 'Fresh Fire', style: 'Hip Hop; Bass Driven Rhythms; Boom Bap Snares And Toms; J Dilla; East Coast Style Rap', hook: 'I never want my Father to cut me out of His will / So I handed over mine and got the better end of the deal / I thought I was doin’ fine, but if I’m keepin’ it real / I was sitting in the driver’s sea…', desc: 'Wheel Man Business is a bass-driven Christian hip-hop track about surrendering control and letting God take the wheel. With boom-bap drums, East Coast grit, and…' },
+          { t: 'Dust & Breath', album: 'Revealed Life', style: 'Gospel hip-hop anthem', hook: '', desc: 'A cinematic Christian hip-hop anthem inspired by Genesis 2:7. The song tells the story of humanity formed from dust but brought to life by the breath of God…' },
+          { t: 'Walking in the Garden', album: 'Revealed Life', style: 'Fast folk hip hop mix', hook: '', desc: 'A warm, melodic song that captures the peace of humanity’s first relationship with God. Inspired by Genesis, it reflects the beauty of the garden, where God…' },
+          { t: 'The Fall', album: 'Revealed Life', style: 'Dark cinematic hip-hop. Orchestral trap. Emotional Christian rap', hook: '', desc: 'A dark, emotional cinematic hip-hop song capturing the moment humanity chose independence from God. Inspired by Genesis 3, the song moves from temptation to…' }
+        ];
+
+        var FEELS = ['All feels', 'Trust', 'Rest', 'Healing', 'Brotherhood', 'Gratitude', 'Perseverance', 'Identity', 'Compassion', 'Family', 'Home', 'Hope', 'Worship'];
+        var feelWrap = document.getElementById('feelChips');
+        var activeFeel = 'All feels';
+        FEELS.forEach(function (f) {
+          var b = document.createElement('button');
+          b.type = 'button'; b.textContent = f; b.setAttribute('aria-pressed', f === 'All feels' ? 'true' : 'false');
+          b.addEventListener('click', function () {
+            activeFeel = f;
+            feelWrap.querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-pressed', x.textContent === f ? 'true' : 'false'); });
+            renderSongs();
+          });
+          feelWrap.appendChild(b);
+        });
+        var songGrid = document.getElementById('songGrid');
+        var songDetail = document.getElementById('songDetail');
+                function renderSongs() {
+          var q = document.getElementById('catSearch').value.trim().toLowerCase();
+          var alb = document.getElementById('catAlbum').value;
+          var list = SONGS.filter(function (s) {
+            return (alb === 'all' || s.album === alb) &&
+              (activeFeel === 'All feels' || s.feel === activeFeel) &&
+              (q === '' || (s.t + ' ' + s.album + ' ' + (s.style || '') + ' ' + (s.desc || '')).toLowerCase().indexOf(q) !== -1);
+          });
+          var countEl = document.getElementById('catCount');
+          if (countEl) countEl.textContent = 'Showing ' + list.length + ' of 47 songs' + (alb !== 'all' ? ' · ' + alb : '') + (activeFeel !== 'All feels' ? ' · feel: ' + activeFeel : '') + (q !== '' ? ' · search: “' + q + '”' : '');
+          songGrid.innerHTML = '';
+          if (!list.length) { songGrid.innerHTML = '<div class="empty-note">No song in the 47 matches that search. Try another title, album, or feel.</div>'; return; }
+          list.forEach(function (s) {
+            var c = document.createElement('button');
+            c.type = 'button'; c.className = 'song-card';
+            var chip = s.feel || s.style || '';
+            var line;
+            if (s.days) line = s.days + (s.stats ? ' · ' + s.stats : '');
+            else if (s.hook) line = 'Hook: “' + s.hook.split(' / ')[0] + '”';
+            else if (s.desc) line = s.desc.length > 118 ? s.desc.slice(0, 118).replace(/\s+\S*$/, '') + '…' : s.desc;
+            else line = 'In the catalog · hook and notes not filled in yet';
+            c.innerHTML = '<h3>' + s.t + '</h3><div class="smeta">' + s.album + '</div>' +
+              (chip ? '<span class="sfeel">' + chip + '</span>' : '') +
+              '<div class="sstats">' + line + '</div>';
+            c.addEventListener('click', function () {
+              var h = '<h3>' + s.t + '</h3>';
+              h += '<p style="margin-top:2px;"><b>' + s.album + '</b> · ' + (ALBUM_INFO[s.album] || '') + (s.style ? ' · ' + s.style : '') + '</p>';
+              if (s.hook) h += '<p class="hook">“' + s.hook.split(' / ').join('<br>') + '”</p>';
+              if (s.desc) h += '<p>' + s.desc + '</p>';
+              if (s.note) h += '<p>' + s.note + '</p>';
+              if (s.days) {
+                h += '<p><b>Ran:</b> ' + s.days + '</p>';
+                if (s.stats) h += '<p><b>Numbers:</b> ' + s.stats + '</p>';
+                if (s.tt) h += '<div class="btnrow" style="margin-top:12px;"><a class="btn small" href="' + s.tt + '" target="_blank" rel="noopener">' + (s.tt === PROFILE ? 'CCC on TikTok' : 'Open on TikTok') + '</a>' +
+                  (s.yt ? '<a class="btn small ghost" href="' + s.yt + '" target="_blank" rel="noopener">Open on YouTube</a>' : '') + '</div>';
+              } else {
+                h += '<p><b>Ran:</b> Not in the Week 1 rotation yet.</p>';
+              }
+              songDetail.innerHTML = h;
+              songDetail.hidden = false;
+              songDetail.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            });
+            songGrid.appendChild(c);
+          });
+        }
+
+        document.getElementById('catSearch').addEventListener('input', renderSongs);
+        document.getElementById('catAlbum').addEventListener('change', renderSongs);
+        renderSongs();
+
+        /* ---------- Decisions ---------- */
+        var calls = {};
+        var summary = document.getElementById('decisionSummary');
+        function renderSummary() {
+          var names = Object.keys(calls);
+          if (!names.length) { summary.innerHTML = '<b>No calls recorded yet.</b> Your Approve, Hold and Decline taps collect here.'; return; }
+          summary.innerHTML = '<b>' + names.length + ' call' + (names.length > 1 ? 's' : '') + ' recorded:</b> ' + names.map(function (n) { return n + ' \u2014 ' + calls[n]; }).join(' \u00B7 ');
+        }
+        document.querySelectorAll('.decision').forEach(function (dec) {
+          var name = dec.getAttribute('data-decision');
+          var state = dec.querySelector('.dstate');
+          dec.querySelectorAll('[data-call]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+              var call = btn.getAttribute('data-call');
+              calls[name] = call;
+              var now = new Intl.DateTimeFormat('en-US', { timeZone: TZ, month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }).format(new Date());
+              if (call === 'Decline') {
+                state.textContent = '\u2715 Declined \u00B7 recorded ' + now + ' PT. Clearing this card from the board \u2014 the call stays in the log below.';
+                state.className = 'dstate declined';
+                renderSummary();
+                setTimeout(function () { if (dec.parentNode) dec.parentNode.removeChild(dec); }, 1100);
+                return;
+              }
+              state.textContent = (call === 'Approve' ? '\u2713 Approved' : '\u25A0 On hold') + ' \u00B7 recorded ' + now + ' PT. Send it to Muse below so it lands in the log.';
+              state.className = 'dstate ' + (call === 'Approve' ? 'approved' : 'held');
+              renderSummary();
+            });
+          });
+        });
+        document.getElementById('copyDecisions').addEventListener('click', function () {
+          var names = Object.keys(calls);
+          var text = names.length ?
+            'CCC Dashboard decisions (David, from the dashboard):\n' + names.map(function (n) { return '- ' + n + ': ' + calls[n].toUpperCase(); }).join('\n') :
+            'No decisions recorded on the dashboard yet.';
+          var btn = this;
+          function done() { btn.textContent = 'Copied \u2014 paste it to Muse in chat'; setTimeout(function () { btn.textContent = 'Copy my calls for Muse'; }, 2600); }
+          if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(text).then(done, done); }
+          else {
+            var ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select();
+            try { document.execCommand('copy'); } catch (e) {}
+            document.body.removeChild(ta); done();
+          }
+        });
+      })();
+    </script>
+  
+    <script>
+      (function () {
+        var wrap = document.querySelector('.wrap');
+        if (!wrap) return;
+        function byId(id) { return document.getElementById(id); }
+        function byLabel(label) { return wrap.querySelector('section[aria-label="' + label + '"]'); }
+        var groups = [
+          { id: 'overview', tone: 'gold', sections: [byId('live'), byId('spotlight'), byLabel('Song of the day')] },
+          { id: 'analytics', tone: 'teal', sections: [byId('analytics')] },
+          { id: 'week', tone: 'blue', sections: [byId('week'), byId('model')] },
+          { id: 'catalog', tone: 'coral', sections: [byId('catalog')] },
+          { id: 'community', tone: 'green', sections: [byId('comments'), byId('channels')] },
+          { id: 'team', tone: 'red', sections: [byLabel('The brothers'), byId('team'), byId('decisions')] },
+          { id: 'chat', tone: 'gold', sections: [byId('brothertalk')] }
+        ];
+        var footer = wrap.querySelector('footer');
+        var panels = {};
+        groups.forEach(function (g, i) {
+          var panel = document.createElement('div');
+          panel.className = 'tab-panel' + (i === 0 ? ' active' : '');
+          panel.id = 'panel-' + g.id;
+          panel.setAttribute('data-tone', g.tone);
+          panel.setAttribute('role', 'tabpanel');
+          panel.setAttribute('aria-labelledby', 'tab-' + g.id);
+          g.sections.forEach(function (s) { if (s) panel.appendChild(s); });
+          wrap.insertBefore(panel, footer);
+          panels[g.id] = panel;
+        });
+        var btns = Array.prototype.slice.call(document.querySelectorAll('.tabbtn'));
+        function select(id, focus) {
+          btns.forEach(function (b) { b.setAttribute('aria-selected', b.getAttribute('data-tab') === id ? 'true' : 'false'); });
+          Object.keys(panels).forEach(function (k) { panels[k].classList.toggle('active', k === id); });
+          if (focus) document.getElementById('tab-' + id).focus();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        btns.forEach(function (b, idx) {
+          b.addEventListener('click', function () { select(b.getAttribute('data-tab'), false); });
+          b.addEventListener('keydown', function (e) {
+            var n = null;
+            if (e.key === 'ArrowRight') n = (idx + 1) % btns.length;
+            if (e.key === 'ArrowLeft') n = (idx - 1 + btns.length) % btns.length;
+            if (n !== null) { e.preventDefault(); select(btns[n].getAttribute('data-tab'), true); }
+          });
+        });
+      })();
+    </script>
+    <script>
+      (function () {
+        var feedback = document.getElementById('spotFeedback');
+        var TT_LINK = 'https://www.tiktok.com/@cross.company.crew/video/7710885410175487262';
+        var YT_LINK = 'https://youtube.com/shorts/QRUrBG2jWE0';
+        var shareText = 'CCC frontrunners before the first crown (Fri Nov 27, 9 AM PT):\n- Reshuffle the Deck - 93 TikTok views, most-viewed of Days 1-3: ' + TT_LINK + '\n- Puzzle Pieces hero - held viewers longest, 4.39s avg view, 65 views on YouTube: ' + YT_LINK + '\nNo winner yet, nobody has hit the floor of 5 yet. First crown lands Friday morning.';
+        var captionText = 'We are watching these two closely this week. Reshuffle the Deck is the one most of you have played so far, and Puzzle Pieces is the one people stayed with the longest. That second one hits home for us, the pieces of a hard season fitting back together. If you are still in the middle of yours, you are not alone in it. First winner gets crowned Friday morning and earns the cross-post. Which one would you pick?';
+        var planText = 'CCC re-edit plan (duplicate, do not re-upload the same file):\n- New opening: strongest lyric line in the first 2 seconds\n- New cut: try the other vibe (cinematic / real scenery / raw and intimate)\n- New caption: fresh, two brothers talking to their fans, what the song did for us, open door for the listener\n- Keep: same song, verified lyrics, same pinned question\n- Timing: if still under 5 views after 48 hours, hold and repost the re-edit 1-2 weeks later\n- If it wins: it earns the 8 PM cross-post to Instagram, Facebook and YouTube instead';
+        function say(msg) { if (feedback) { feedback.textContent = msg; } }
+        function copyText(text, msg) {
+          function done() { say(msg); }
+          if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(text).then(done, function () { fallback(); }); }
+          else { fallback(); }
+          function fallback() {
+            var ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+            document.body.appendChild(ta); ta.select();
+            try { document.execCommand('copy'); } catch (e) {}
+            document.body.removeChild(ta); done();
+          }
+        }
+        function downloadIcs(filename, title, desc, startUtc, endUtc) {
+          var ics = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//CCC Dashboard//EN','BEGIN:VEVENT','UID:' + Date.now() + '@ccc-dashboard','DTSTAMP:' + startUtc,'DTSTART:' + startUtc,'DTEND:' + endUtc,'SUMMARY:' + title,'DESCRIPTION:' + desc.replace(/\n/g, '\\n'),'END:VEVENT','END:VCALENDAR'].join('\r\n');
+          var blob = new Blob([ics], { type: 'text/calendar' });
+          var url = URL.createObjectURL(blob);
+          var a = document.createElement('a'); a.href = url; a.download = filename; document.body.appendChild(a); a.click();
+          document.body.removeChild(a); setTimeout(function () { URL.revokeObjectURL(url); }, 800);
+        }
+        var shareBtn = document.getElementById('spotShare');
+        if (shareBtn) shareBtn.addEventListener('click', function () {
+          if (navigator.share) {
+            navigator.share({ title: 'CCC Winner Spotlight - frontrunners', text: shareText, url: TT_LINK }).then(function () { say('Shared. Pick where it goes next.'); }, function () {});
+          } else { copyText(shareText, 'Share text copied - paste it into your own account or a message.'); }
+        });
+        var capBtn = document.getElementById('spotCopyCaption');
+        if (capBtn) capBtn.addEventListener('click', function () { copyText(captionText, 'Post copied - paste it into TikTok, Instagram, Facebook or YouTube.'); });
+        var calBtn = document.getElementById('spotCalendar');
+        if (calBtn) calBtn.addEventListener('click', function () {
+          downloadIcs('ccc-winner-crown-fri-nov-27.ics', 'CCC - Crown the first Winner Spotlight winner', 'First winner pick, Fri Nov 27, 9 AM PT. Frontrunners: Reshuffle the Deck (93 TikTok views) and Puzzle Pieces hero (4.39s avg hold, 65 YouTube views). Winner earns the 8 PM cross-post.', '20261127T170000Z', '20261127T173000Z');
+          say('Calendar file downloaded - open it to add the Friday 9 AM crown.');
+        });
+        var dupBtn = document.getElementById('spotDuplicate');
+        var plan = document.getElementById('spotPlan');
+        if (dupBtn && plan) dupBtn.addEventListener('click', function () {
+          var open = plan.hidden;
+          plan.hidden = !open;
+          dupBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+          dupBtn.textContent = open ? 'Hide the re-edit plan' : 'Duplicate as a re-edit plan';
+          if (open) plan.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        });
+        var planBtn = document.getElementById('spotCopyPlan');
+        if (planBtn) planBtn.addEventListener('click', function () { copyText(planText, 'Re-edit plan copied - paste it to Muse or Matt to start the duplicate.'); });
+        var cal2Btn = document.getElementById('spotCalendar2');
+        if (cal2Btn) cal2Btn.addEventListener('click', function () {
+          downloadIcs('ccc-reedit-reminder.ics', 'CCC - Re-edit reminder for the spotlight clip', 'Check the 48-hour numbers. If still under 5 views, build the re-edit (new opening, new cut, new caption) and hold it to repost 1-2 weeks later. Never re-upload the identical file.', '20261127T180000Z', '20261127T183000Z');
+          say('Reminder file downloaded - open it to add it to your calendar.');
+        });
+      })();
+    </script>
+    <script>
+      (function () {
+        var feedback = document.getElementById('sotdFeedback');
+        var linkBox = document.getElementById('sotdLinkBox');
+        var SONG_LINK = 'https://youtube.com/shorts/5vhI6BiVjXo';
+        var shareText = 'Our song of the day is Human Shield by Cross Company Crew. It is about the people whose healing keeps somebody else on their feet. The line we keep coming back to is: Send this to the one standing in the gap for you. Tonight\'s 8 PM YouTube Short is this song: ' + SONG_LINK;
+        var friendMessage = 'Hey, wanted to send you our song of the day. It is called Human Shield, about the people whose healing keeps somebody else on their feet. The line we keep coming back to is: Send this to the one standing in the gap for you. Tonight\'s Short is this song if you want to hear it: ' + SONG_LINK + ' Hope it meets you where you are. David and Matt';
+        var claudePrompt = 'Muse, make a clip from this song: Human Shield, Song of the Day for Wed Nov 25.\n- Song: Human Shield (ALL IN), Test 1, judged on sends, floor of 5, verdict at 48 hours\n- Hook line: Send this to the one standing in the gap for you.\n- What it is about: the people whose healing kept us on our feet\n- Pinned question: Whose story kept you on your feet? (pinned at 8:05 PM)\n- Cover the full chorus, lyrics verified word for word against the Lyrics database in Notion\n- Caption in our voice: two brothers talking to our fans, what the song did for us, an open door for the listener\n- Tonight\'s 8 PM YouTube Short is this song: ' + SONG_LINK;
+        function say(msg) { if (feedback) { feedback.textContent = msg; } }
+        function showLinkBox() { if (linkBox) { linkBox.hidden = false; } var b = document.getElementById('sotdCopyLink'); if (b) b.setAttribute('aria-expanded', 'true'); }
+        function copyText(text, msg) {
+          function done() { say(msg); }
+          if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(text).then(done, function () { fallback(); }); }
+          else { fallback(); }
+          function fallback() {
+            var ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+            document.body.appendChild(ta); ta.select();
+            try { document.execCommand('copy'); } catch (e) {}
+            document.body.removeChild(ta); done();
+          }
+        }
+        var shareBtn = document.getElementById('sotdShare');
+        if (shareBtn) shareBtn.addEventListener('click', function () {
+          if (navigator.share) {
+            navigator.share({ title: 'CCC Song of the Day - Human Shield', text: shareText, url: SONG_LINK }).then(function () { say('Shared. Pick where it goes next.'); }, function () {});
+          } else { showLinkBox(); copyText(shareText, 'Share text copied, and the song link is shown below. Paste it into your own account or a message.'); }
+        });
+        var linkBtn = document.getElementById('sotdCopyLink');
+        if (linkBtn) linkBtn.addEventListener('click', function () {
+          showLinkBox();
+          copyText(SONG_LINK, 'Song link copied, and shown below so you can check it. Paste it anywhere you share it.');
+          if (linkBox) linkBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        });
+        var msgBtn = document.getElementById('sotdCopyMessage');
+        if (msgBtn) msgBtn.addEventListener('click', function () { copyText(friendMessage, 'Message copied - paste it into a text, DM, or group chat and send it to a friend.'); });
+        var claudeBtn = document.getElementById('sotdCopyForClaude');
+        if (claudeBtn) claudeBtn.addEventListener('click', function () { copyText(claudePrompt, 'Copied for Muse - paste it into chat and Muse will build the clip from Human Shield.'); });
+      })();
+    </script>
+    <script>
+      (function () {
+        var CARD_SEL = '.kpi, .test-chip, .cd, .chart-card, .ana-box, .ana-flag, .spotlight, .sotd, .brothers-visual, .motto-band, .emp, .fstep, .album, .truth, .comment, .chan, .box, .decision, .day, .song-card, .clip, .day-detail, .song-detail';
+        var ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>';
+        var BTN_HTML = ICON;
+
+        function clean(s) { return (s || '').replace(/\s+/g, ' ').trim(); }
+        function txt(el, sel) { if (!el) return ''; var n = el.querySelector(sel); return n ? clean(n.textContent) : ''; }
+        function trunc(s, n) { s = clean(s); return s.length > n ? s.slice(0, n).replace(/\s+\S*$/, '') + '…' : s; }
+
+        function sectionName(card) {
+          var sec = card.closest('section');
+          if (!sec) return '';
+          var h = sec.querySelector('.sec-head h2');
+          return h ? clean(h.textContent) : '';
+        }
+
+        function cardRef(card) {
+          var title = '', detail = '';
+          if (card.classList.contains('kpi')) {
+            title = txt(card, '.lbl'); detail = txt(card, '.num');
+            var sub = txt(card, '.sub'); if (sub) detail += (detail ? ' · ' : '') + trunc(sub, 70);
+          } else if (card.classList.contains('cd')) {
+            title = txt(card, '.cd-lbl'); detail = txt(card, '.cd-sub');
+          } else if (card.classList.contains('day')) {
+            title = txt(card, '.dow') + ' Nov ' + txt(card, '.dnum') + ' · ' + txt(card, '.song');
+            detail = txt(card, '.detail');
+          } else if (card.classList.contains('comment')) {
+            title = txt(card, '.cwho');
+            var cs = txt(card, '.csong'); if (cs) title += ' · ' + cs;
+            detail = trunc(txt(card, '.ctext'), 90);
+          } else if (card.classList.contains('spotlight')) {
+            title = 'Winner Spotlight · ' + txt(card, 'h3'); detail = txt(card, '.kick');
+          } else if (card.classList.contains('sotd')) {
+            var kick = txt(card, '.kick');
+            title = 'Song of the Day' + (kick ? ' · ' + kick.split('·')[0].trim() : '');
+            detail = trunc(txt(card, 'blockquote'), 80);
+          } else if (card.classList.contains('brothers-visual')) {
+            title = 'The Brothers · David & Matthew'; detail = 'Two brothers · One mission';
+          } else if (card.classList.contains('motto-band')) {
+            title = txt(card, '.motto'); detail = txt(card, '.verse');
+          } else if (card.classList.contains('truth')) {
+            title = 'Catalog note · Where the truth lives'; detail = trunc(card.textContent, 100);
+          } else if (card.classList.contains('clip')) {
+            title = txt(card, 'h4'); detail = txt(card, '.ctime');
+          } else if (card.classList.contains('day-detail')) {
+            title = txt(card, 'h3'); detail = 'The day opened up · every clip, caption and link for it';
+          } else if (card.classList.contains('song-detail')) {
+            title = txt(card, 'h3'); detail = trunc(txt(card, 'p'), 90);
+          } else {
+            title = txt(card, 'h3') || txt(card, 'h4') || txt(card, '.lbl') || txt(card, '.tt span') || '';
+            var cand = ['.fnum', '.handle', '.acount', '.emp-role', '.step-n', '.ana-sub', '.csub', '.sstats', '.sig', '.sub'];
+            for (var i = 0; i < cand.length; i++) { var v = txt(card, cand[i]); if (v) { detail = trunc(v, 95); break; } }
+            if (card.classList.contains('album')) { var st = txt(card, '.astat'); if (st) detail += (detail ? ' · ' : '') + st; }
+            if (card.classList.contains('decision')) { var due = txt(card, '.due'); if (due) detail = 'Due: ' + due; }
+          }
+          if (!title) title = 'Dashboard card';
+          var ref = 'Talking about: ' + title;
+          if (detail) ref += ' — ' + detail;
+          var sec = sectionName(card);
+          if (sec && title.indexOf(sec) === -1) ref += ' (' + sec + ')';
+          return { title: trunc(title, 120), detail: trunc(detail, 200), ref: trunc(ref, 220) };
+        }
+
+        function copyText(text) {
+          function fallback() {
+            var ta = document.createElement('textarea');
+            ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+            document.body.appendChild(ta); ta.select();
+            try { document.execCommand('copy'); } catch (e) {}
+            document.body.removeChild(ta);
+          }
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(function () {}, fallback);
+          } else { fallback(); }
+        }
+
+        function slugify(s) {
+          return clean(s).toLowerCase().replace(/&/g, ' and ').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 64).replace(/-+$/, '');
+        }
+        function ensureCardId(card) {
+          if (!card) return '';
+          if (card.id) return card.id;
+          var r = cardRef(card);
+          var base = slugify(r.title);
+          if (card.classList.contains('clip')) base = slugify(r.title + ' ' + r.detail) || base;
+          if (!base || base === 'dashboard-card') base = slugify((card.className || 'card') + ' ' + (r.detail || '')) || 'card';
+          var baseId = 'card-' + base;
+          var existing = document.getElementById(baseId);
+          if (existing && existing !== card) {
+            var ext = slugify(r.detail);
+            if (ext) baseId = baseId + '-' + ext.slice(0, 32).replace(/-+$/, '');
+          }
+          var candidate = baseId, n = 2, ex;
+          while ((ex = document.getElementById(candidate)) && ex !== card) { candidate = baseId + '-' + n; n++; }
+          card.id = candidate;
+          return candidate;
+        }
+
+        function goToChat() {
+          var chatBtn = document.querySelector('.tabbtn[data-tab="chat"]');
+          var alreadyChat = chatBtn && chatBtn.getAttribute('aria-selected') === 'true';
+          if (chatBtn && !alreadyChat) chatBtn.click();
+          var talkSec = document.getElementById('brothertalk');
+          setTimeout(function () {
+            if (talkSec) talkSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }, alreadyChat ? 60 : 550);
+        }
+
+        function onTalk(card, btnEl, ev) {
+          if (ev) { ev.stopPropagation(); ev.preventDefault(); }
+          var r = cardRef(card);
+          var cardId = (btnEl && btnEl.getAttribute('data-cardid')) || ensureCardId(card);
+          copyText(r.ref);
+          if (window.CCCBoardFrame) window.CCCBoardFrame.openWithCard(r.title, r.detail, cardId);
+          btnEl.classList.add('copied');
+          setTimeout(function () { goToChat(); }, 550);
+          setTimeout(function () { btnEl.classList.remove('copied'); }, 2200);
+        }
+
+        function hasOwnBtn(card) {
+          var btns = card.querySelectorAll('.talk-btn');
+          for (var i = 0; i < btns.length; i++) {
+            if (btns[i].closest(CARD_SEL) === card) return true;
+          }
+          return false;
+        }
+
+        function targetFor(card) {
+          if (card.classList.contains('spotlight')) { var b = card.querySelector('.spotlight-body'); if (b) return b; }
+          if (card.classList.contains('sotd')) { var b2 = card.querySelector('.sotd-body'); if (b2) return b2; }
+          if (card.classList.contains('clip')) {
+            var divs = card.querySelectorAll(':scope > div');
+            if (divs.length > 1) return divs[1];
+          }
+          return card;
+        }
+
+        function injectOne(card) {
+          var cid = ensureCardId(card);
+          if (card.closest('#brothertalk')) return;
+          if (hasOwnBtn(card)) {
+            card.querySelectorAll('.talk-btn').forEach(function (x) { if (x.closest(CARD_SEL) === card) x.setAttribute('data-cardid', cid); });
+            return;
+          }
+          var row = document.createElement('div');
+          row.className = 'talk-row';
+          var b;
+          if (card.tagName === 'BUTTON') {
+            b = document.createElement('span');
+            b.setAttribute('role', 'button');
+            b.tabIndex = 0;
+          } else {
+            b = document.createElement('button');
+            b.type = 'button';
+          }
+          b.className = 'talk-btn';
+          b.setAttribute('data-cardid', cid);
+          b.innerHTML = BTN_HTML;
+          b.setAttribute('aria-label', 'Talk about this card in the Brother Talk chat');
+          b.title = 'Copies a reference to this card and takes you to Brother Talk';
+          (function (c, el) {
+            el.addEventListener('click', function (ev) { onTalk(c, el, ev); });
+            el.addEventListener('keydown', function (ev) {
+              if (ev.key === 'Enter' || ev.key === ' ') onTalk(c, el, ev);
+            });
+          })(card, b);
+          row.appendChild(b);
+          targetFor(card).appendChild(row);
+        }
+
+        function injectAll() {
+          document.querySelectorAll(CARD_SEL).forEach(injectOne);
+        }
+        injectAll();
+
+        var pending = false;
+        var obs = new MutationObserver(function () {
+          if (pending) return;
+          pending = true;
+          setTimeout(function () { pending = false; injectAll(); }, 120);
+        });
+        obs.observe(document.body, { childList: true, subtree: true });
+
+        /* ---------- Deep-link: jump from Brother Talk to a card ---------- */
+        function findCardByRef(name, detail) {
+          var wantName = clean(name), wantDetail = clean(detail || '');
+          var cards = document.querySelectorAll(CARD_SEL);
+          var titleOnly = null, i, r;
+          for (i = 0; i < cards.length; i++) {
+            r = cardRef(cards[i]);
+            if (r.title !== wantName) continue;
+            if (!wantDetail) return cards[i];
+            if (r.detail === wantDetail) return cards[i];
+            if (!titleOnly) titleOnly = cards[i];
+          }
+          if (titleOnly) return titleOnly;
+          for (i = 0; i < cards.length; i++) {
+            r = cardRef(cards[i]);
+            if (wantName && r.title && (r.title.indexOf(wantName) !== -1 || wantName.indexOf(r.title) !== -1)) {
+              if (!wantDetail || !r.detail || r.detail.indexOf(wantDetail) !== -1 || wantDetail.indexOf(r.detail) !== -1) return cards[i];
+            }
+          }
+          return null;
+        }
+        function highlightCard(card) {
+          card.classList.remove('ccc-card-highlight');
+          void card.offsetWidth;
+          card.classList.add('ccc-card-highlight');
+          if (card._cccHlTimer) clearTimeout(card._cccHlTimer);
+          card._cccHlTimer = setTimeout(function () { card.classList.remove('ccc-card-highlight'); }, 2500);
+        }
+        function gotoCard(card) {
+          if (!card) return;
+          if (card.hidden) card.hidden = false;
+          var host = card.closest ? card.closest('#dayDetail, #songDetail') : null;
+          if (host && host.hidden) host.hidden = false;
+          var panel = card.closest ? card.closest('.tab-panel') : null;
+          var needSwitch = false;
+          if (panel && panel.id.indexOf('panel-') === 0) {
+            var tabId = panel.id.slice(6);
+            var tabBtn = document.querySelector('.tabbtn[data-tab="' + tabId + '"]');
+            if (tabBtn && tabBtn.getAttribute('aria-selected') !== 'true') { needSwitch = true; tabBtn.click(); }
+          }
+          setTimeout(function () {
+            try { card.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) { card.scrollIntoView(); }
+            highlightCard(card);
+            // Switching tabs also smooth-scrolls the page to the top, and
+            // that scroll can still be running and swallow this one —
+            // worst for cards on a hidden tab (e.g. Community comments).
+            // Confirm the landing: if the card is not actually in view
+            // shortly after, jump straight to it and highlight again.
+            setTimeout(function () {
+              try {
+                var r = card.getBoundingClientRect();
+                var inView = r.bottom > 0 && r.top < (window.innerHeight || document.documentElement.clientHeight);
+                if (!inView) {
+                  try { card.scrollIntoView({ block: 'center' }); } catch (e2) { card.scrollIntoView(); }
+                  highlightCard(card);
+                }
+              } catch (e3) {}
+            }, 900);
+          }, needSwitch ? 500 : 80);
+        }
+        function isBoardOrigin(origin) {
+          if (!origin || typeof origin !== 'string') return false;
+          if (origin === 'https://script.google.com' || origin === 'https://script.googleusercontent.com') return true;
+          if (origin.indexOf('https://') !== 0) return false;
+          // The board's sandboxed Apps Script frame posts from a host like
+          // https://n-...-script.googleusercontent.com (hyphen, not dot),
+          // and other Google frames use dotted subdomains. Accept any
+          // script.google.com / googleusercontent.com host, either form.
+          return origin.endsWith('.script.google.com') ||
+            origin.endsWith('.googleusercontent.com') ||
+            origin.endsWith('-script.googleusercontent.com') ||
+            origin.endsWith('.script.googleusercontent.com');
+        }
+        window.addEventListener('message', function (ev) {
+          try {
+            if (!isBoardOrigin(ev.origin)) return;
+            var d = ev.data;
+            if (typeof d === 'string') { try { d = JSON.parse(d); } catch (e) { return; } }
+            if (!d || d.type !== 'ccc-goto-card') return;
+            var target = null;
+            if (d.cardId) target = document.getElementById(String(d.cardId));
+            if (!target && d.cardId) {
+              // The card may not have its generated id yet (dynamically
+              // added cards): assign ids, then resolve the exact id again.
+              injectAll();
+              target = document.getElementById(String(d.cardId));
+            }
+            if (!target && d.card) target = findCardByRef(String(d.card), d.detail ? String(d.detail) : '');
+            if (!target) return;
+            gotoCard(target);
+          } catch (e) {}
+        });
+      })();
+    </script>
+    <script>
+      (function () {
+        var BOARD_URL = 'https://script.google.com/macros/s/AKfycbwYusBuwV2EiiOaqi1GFrYjNqYQhheND2XeQgmLqiAuKcQeBbcYRvgKrwnA7H0n56XfeA/exec';
+        window.CCCBoardFrame = {
+          openWithCard: function (card, detail, cardId) {
+            var frame = document.getElementById('boardFrame');
+            if (!frame) return;
+            frame.src = BOARD_URL + '?card=' + encodeURIComponent(card || '') + '&detail=' + encodeURIComponent(detail || '') + '&cardid=' + encodeURIComponent(cardId || '');
+          }
+        };
+      })();
+    </script>
+  </body>
+</html>

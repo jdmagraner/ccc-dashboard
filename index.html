@@ -657,8 +657,8 @@
             </div>
         </div>
         <div class="statusline">
-          <span class="pill"><span class="dot"></span> Week 1 · Nov 21–27 · Day 5 today</span>
-          <span class="pill"><span class="dot gold"></span> Thu: TikTok tests → winners cross-post</span>
+          <button class="pill" type="button" id="approvalsPill"><span class="dot gold"></span> <span id="approvalsPillText">Checking what is waiting on you…</span></button>
+          <button class="pill" type="button" id="nextPostPill"><span class="dot"></span> <span id="nextPostPillText">Next post: checking the schedule…</span></button>
           <button class="pill" type="button" id="runningPill"><span class="dot"></span> 14 things running now · tap to view</button>
         </div>
         <div class="quicklinks" aria-label="Quick links">
@@ -709,7 +709,7 @@
         <div class="countdowns" id="liveCountdowns">
           <div class="cd"><div class="cd-num" id="cdNextPost">--:--:--</div><div class="cd-lbl" id="cdNextPostLbl">To the next post slot</div><div class="cd-sub" id="cdNextPostSub">7:30 AM · 12:30 PM · 7:30 PM PT</div></div>
           <div class="cd red"><div class="cd-num" id="cdWinner">--</div><div class="cd-lbl" id="cdWinnerLbl">To the first winner pick</div><div class="cd-sub" id="cdWinnerSub">Fri Nov 27, 9 AM PT</div></div>
-          <div class="cd"><div class="cd-num" id="cdWeek">--</div><div class="cd-lbl">Left in Week 1</div><div class="cd-sub">Closes Fri Nov 27</div></div>
+          <div class="cd"><div class="cd-num" id="cdCrossSong" style="font-size:21px;">Cross-post status</div><div class="cd-lbl" id="cdCrossLbl">Most recent cross-post</div><div class="cd-sub" id="cdCrossPlats">Checking the board…</div><div class="cd-sub" id="cdCrossNext"></div></div>
         </div>
         
         <div class="chart-card" id="liveChart">
@@ -1432,7 +1432,47 @@
         }
         var winnerPick = new Date('2026-11-27T09:00:00-08:00').getTime();
         var winnerCross = new Date('2026-11-27T20:00:00-08:00').getTime();
-        var weekEnd = new Date('2026-11-28T00:00:00-08:00').getTime();
+        // Winner & cross-post state — the board's record of the winner model.
+        // currentWinner stays null until the Analytics Manager crowns one at a
+        // pick; crossPosts lists each winner/hero cross-post with its 8 PM
+        // status per platform. The Cross-post status card renders from this.
+        var WINNER_STATE = {
+          currentWinner: null,
+          currentDay: 'Day 6',
+          pickAt: winnerPick,
+          pickLabel: 'Fri Nov 27, 9 AM PT',
+          crossPosts: [
+            { song: 'Human Shield', dayLabel: 'Day 5 hero', when: 'Wed Nov 25, 8 PM', instagram: 'live', facebook: 'live', youtube: 'live' }
+          ]
+        };
+        function platWord(s) { return s === 'live' ? 'live' : (s === 'scheduled' ? 'goes out 8 PM' : 'not posted'); }
+        function renderCross() {
+          var songEl = document.getElementById('cdCrossSong');
+          if (!songEl) return;
+          var cp = WINNER_STATE.crossPosts.length ? WINNER_STATE.crossPosts[WINNER_STATE.crossPosts.length - 1] : null;
+          if (WINNER_STATE.currentWinner) {
+            var w = null;
+            for (var i = 0; i < WINNER_STATE.crossPosts.length; i++) { if (WINNER_STATE.crossPosts[i].song === WINNER_STATE.currentWinner) w = WINNER_STATE.crossPosts[i]; }
+            if (w) cp = w;
+          }
+          if (cp) {
+            setText(songEl, cp.song);
+            setText(document.getElementById('cdCrossLbl'), 'Cross-post status · ' + cp.dayLabel + ' · ' + cp.when);
+            setText(document.getElementById('cdCrossPlats'), 'Instagram ' + platWord(cp.instagram) + ' · Facebook ' + platWord(cp.facebook) + ' · YouTube ' + platWord(cp.youtube));
+          } else {
+            setText(songEl, 'No cross-post yet');
+            setText(document.getElementById('cdCrossLbl'), 'Cross-post status');
+            setText(document.getElementById('cdCrossPlats'), 'Nothing has crossed over yet');
+          }
+          var nextEl = document.getElementById('cdCrossNext');
+          if (WINNER_STATE.currentWinner) {
+            setText(nextEl, 'Current winner: ' + WINNER_STATE.currentWinner);
+          } else if (Date.now() < WINNER_STATE.pickAt) {
+            setText(nextEl, 'No ' + WINNER_STATE.currentDay + ' winner picked yet · first pick ' + WINNER_STATE.pickLabel);
+          } else {
+            setText(nextEl, 'Winner pick is due · check the 9 AM run');
+          }
+        }
         // Per-platform schedules for the Live Numbers timers, following the
         // platform tab (window.CCC_LIVE_PLAT, set by the switcher script).
         // TikTok posts 3x a day; YouTube, Instagram and Facebook each get the
@@ -1462,8 +1502,7 @@
           setText(document.getElementById('cdWinner'), w > 0 ? fmtDur(w) : t.winnerPast);
           setText(document.getElementById('cdWinnerLbl'), t.winnerLbl);
           setText(document.getElementById('cdWinnerSub'), t.winnerSub);
-          var we = weekEnd - now.getTime();
-          setText(document.getElementById('cdWeek'), we > 0 ? fmtDur(we) : 'Week 1 complete');
+          renderCross();
         }
         tickCountdowns(); setInterval(tickCountdowns, 1000);
         window.cccTickCountdowns = tickCountdowns;
@@ -1565,6 +1604,63 @@
         var startIdx = DAYS.findIndex(function (d) { return d.date === todayKey; });
         if (startIdx < 0) startIdx = 4;
         openDay(startIdx, weekGrid.querySelectorAll('.day')[startIdx], true);
+
+        /* ---------- Hero pill · next post ---------- */
+        // Reads the same DAYS schedule the week board renders: the first clip
+        // whose slot is still ahead is the next post. Tapping the pill jumps
+        // to This Week and opens that day.
+        var nextPostPill = document.getElementById('nextPostPill');
+        var nextPostText = document.getElementById('nextPostPillText');
+        var nextPostDayIdx = -1;
+        function clipStartMs(day, clip) {
+          var m = /^(\d{1,2}):(\d{2})\s(AM|PM)/.exec(clip.time || '');
+          if (!m) return null;
+          var h = parseInt(m[1], 10) % 12;
+          if (m[3] === 'PM') h += 12;
+          return new Date(day.date + 'T' + (h < 10 ? '0' : '') + h + ':' + m[2] + ':00-08:00').getTime();
+        }
+        function dayShort(day) {
+          var p = day.date.split('-');
+          var names = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+          return names[parseInt(p[1], 10) - 1] + ' ' + parseInt(p[2], 10);
+        }
+        function updateNextPostPill() {
+          if (!nextPostText) return;
+          var nowMs = Date.now();
+          var found = null;
+          for (var di = 0; di < DAYS.length && !found; di++) {
+            for (var ci = 0; ci < DAYS[di].clips.length; ci++) {
+              var at = clipStartMs(DAYS[di], DAYS[di].clips[ci]);
+              if (at !== null && at > nowMs) { found = { dayIdx: di, clip: DAYS[di].clips[ci] }; break; }
+            }
+          }
+          if (found) {
+            nextPostDayIdx = found.dayIdx;
+            var d = DAYS[found.dayIdx];
+            var when = d.date === todayKey ? 'today' : dayShort(d);
+            var timeShort = (/^\d{1,2}:\d{2}\s(AM|PM)/.exec(found.clip.time) || [found.clip.time])[0];
+            setText(nextPostText, 'Next post: ' + found.clip.title + ' · ' + timeShort + ' ' + when + ' · tap to view');
+          } else {
+            nextPostDayIdx = DAYS.length - 1;
+            setText(nextPostText, 'Week 1 posts are all out · tap to view');
+          }
+        }
+        updateNextPostPill();
+        setInterval(updateNextPostPill, 60000);
+        if (nextPostPill) {
+          nextPostPill.addEventListener('click', function () {
+            var tab = document.querySelector('.tabbtn[data-tab="week"]');
+            if (tab && tab.getAttribute('aria-selected') !== 'true') tab.click();
+            setTimeout(function () {
+              if (nextPostDayIdx >= 0 && openIdx !== nextPostDayIdx) {
+                openDay(nextPostDayIdx, weekGrid.querySelectorAll('.day')[nextPostDayIdx], true);
+              }
+              var target = document.getElementById('dayDetail');
+              if (!target || target.hidden) target = document.getElementById('week');
+              if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 120);
+          });
+        }
 
         /* ---------- Catalog ---------- */
                 var ALBUM_INFO = { 'ALL IN': 'Album 01 · Published', 'The FAMILIAVERSE': 'Album 02 · Published', 'A.I.M.': 'Album 03 · Published', 'Fresh Fire': 'Album 04 · WALK UP · In production', 'Revealed Life': 'Special series · In the making' };
@@ -2676,6 +2772,50 @@
           if (mq.addEventListener) mq.addEventListener('change', onChange);
           else if (mq.addListener) mq.addListener(onChange);
         }
+      })();
+    </script>
+    <script>
+      (function () {
+        // Hero pill · pending approvals. Counts the decision cards still on
+        // the board in Team & Decisions that David has not called yet (no
+        // recorded state), so the number stays live as he approves, holds or
+        // declines. Tapping jumps straight to those cards.
+        var pill = document.getElementById('approvalsPill');
+        var txt = document.getElementById('approvalsPillText');
+        if (!pill || !txt) return;
+        function pendingCount() {
+          var n = 0;
+          document.querySelectorAll('.decision').forEach(function (dec) {
+            var st = dec.querySelector('.dstate');
+            if (!st || !st.textContent.trim()) n++;
+          });
+          return n;
+        }
+        function render() {
+          var n = pendingCount();
+          var label = n === 0 ? 'Nothing waiting on your approval · tap to view'
+            : n === 1 ? '1 waiting on your approval · tap to view'
+            : n + ' waiting on your approval · tap to view';
+          if (txt.textContent !== label) txt.textContent = label;
+        }
+        render();
+        document.addEventListener('click', function (e) {
+          if (e.target && e.target.closest && e.target.closest('[data-call]')) setTimeout(render, 1300);
+        });
+        var box = document.getElementById('decisions');
+        if (box && window.MutationObserver) {
+          var mo = new MutationObserver(function () { render(); });
+          mo.observe(box, { childList: true, subtree: true, characterData: true });
+          setTimeout(function () { mo.disconnect(); }, 10 * 60 * 1000);
+        }
+        pill.addEventListener('click', function () {
+          var tab = document.querySelector('.tabbtn[data-tab="team"]');
+          if (tab && tab.getAttribute('aria-selected') !== 'true') tab.click();
+          setTimeout(function () {
+            var sec = document.getElementById('decisions');
+            if (sec) sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }, 120);
+        });
       })();
     </script>
     <script>

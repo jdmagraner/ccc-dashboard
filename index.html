@@ -566,8 +566,8 @@
 
       /* ---------- Talk about this (card → Brother Talk) ---------- */
       .talk-row { display: flex; justify-content: flex-end; margin-top: 12px; }
-      .talk-btn { display: inline-flex; align-items: center; gap: 7px; border: 1px solid var(--line); background: var(--panel-2); color: var(--ink-2); border-radius: 999px; padding: 6px 10px; font: inherit; font-size: 12.5px; font-weight: 700; cursor: pointer; min-height: 32px; line-height: 1.2; text-align: left; }
-      .talk-btn svg { width: 14px; height: 14px; flex: none; }
+      .talk-btn { display: inline-flex; align-items: center; justify-content: center; border: 1px solid var(--line); background: var(--panel-2); color: var(--ink-2); border-radius: 999px; padding: 0; width: 32px; height: 32px; font: inherit; cursor: pointer; min-height: 32px; line-height: 1; text-align: center; flex: none; }
+      .talk-btn svg { width: 16px; height: 16px; flex: none; }
       .talk-btn:hover, .talk-btn:focus-visible { border-color: var(--tone, var(--gold)); color: var(--tone, var(--gold)); }
       .talk-btn.copied { border-color: var(--green); color: var(--green); background: var(--green-soft); }
       .ccc-card-highlight { outline: 3px solid var(--gold) !important; outline-offset: 3px; box-shadow: 0 0 0 7px var(--gold-soft), var(--shadow) !important; animation: cccCardPulse 1.25s ease-in-out 2; position: relative; z-index: 2; }
@@ -1784,7 +1784,7 @@
       (function () {
         var CARD_SEL = '.kpi, .test-chip, .cd, .chart-card, .ana-box, .ana-flag, .spotlight, .sotd, .brothers-visual, .motto-band, .emp, .fstep, .album, .truth, .comment, .chan, .box, .decision, .day, .song-card, .clip, .day-detail, .song-detail';
         var ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>';
-        var BTN_HTML = ICON + '<span>Talk about this</span>';
+        var BTN_HTML = ICON;
 
         function clean(s) { return (s || '').replace(/\s+/g, ' ').trim(); }
         function txt(el, sel) { if (!el) return ''; var n = el.querySelector(sel); return n ? clean(n.textContent) : ''; }

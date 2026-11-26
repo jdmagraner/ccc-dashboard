@@ -213,6 +213,12 @@
       .upnext-badge { position: absolute; left: 10px; top: 10px; font-size: 11px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; padding: 3px 9px; border-radius: 999px; background: var(--gold); color: #161310; }
       :root[data-theme="light"] .upnext-badge { color: #fff; }
       @media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) .upnext-badge { color: #fff; } }
+      .upnext-item.is-pending { border-style: dashed; border-color: var(--line); }
+      .upnext-thumb.is-pending { background-image: none; background-color: var(--panel); display: flex; align-items: center; justify-content: center; padding: 12px; border-bottom: 1px dashed var(--line); }
+      .upnext-pending { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; text-align: center; color: var(--muted); }
+      .upnext-pending svg { width: 22px; height: 22px; display: block; opacity: .85; }
+      .upnext-pending span { font-family: "Sora", sans-serif; font-size: 13px; font-weight: 700; line-height: 1.25; color: var(--ink-2); letter-spacing: .01em; }
+      .upnext-status { display: inline-flex; align-self: flex-start; font-size: 11px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; padding: 3px 9px; border-radius: 999px; background: var(--gold-soft); color: var(--gold); border: 1px solid color-mix(in srgb, var(--gold) 35%, transparent); }
       .upnext-body { padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
       .upnext-song { font-family: "Sora", sans-serif; font-weight: 700; font-size: 14.5px; line-height: 1.3; }
       .upnext-when { font-family: "IBM Plex Mono", monospace; font-size: 12px; color: var(--tone); font-weight: 600; }
@@ -226,6 +232,8 @@
         .upnext-list { grid-template-columns: 1fr; }
         .upnext-item { flex-direction: row; align-items: stretch; }
         .upnext-thumb { width: 86px; height: auto; min-height: 92px; }
+        .upnext-thumb.is-pending { border-bottom: none; border-right: 1px dashed var(--line); padding: 10px 8px; }
+        .upnext-pending span { font-size: 12px; }
         .upnext-body { justify-content: center; }
       }
       @media (prefers-reduced-motion: reduce) { .upnext-item { transition: none; } .upnext-item:hover { transform: none; } }
@@ -752,8 +760,8 @@
             <div class="upnext-head"><div class="cd-lbl">Coming up next</div><div class="cd-sub">The next posts on the schedule, soonest first</div></div>
             <div class="upnext-list" id="upNextList">
               <div class="upnext-item"><div class="upnext-thumb" style="background-image:url('assets/cover-silhouette.jpg')" role="img" aria-label="Preview frame for Four Quarters (Closer Than A Brother)"><span class="upnext-badge">Next up</span></div><div class="upnext-body"><div class="upnext-song">Four Quarters (Closer Than A Brother)</div><div class="upnext-when">Thu, Nov 26 · 7:30 PM PT</div><div class="upnext-plat"><span class="upnext-picon" style="background:#111111" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.6 3c.4 2.2 1.8 3.6 4.1 3.9v3c-1.6 0-3-.5-4.1-1.3v6.6a6.1 6.1 0 1 1-6.1-6.1c.3 0 .7 0 1 .1v3.1a3 3 0 1 0 2 2.9V3h3.1z"/></svg></span>TikTok</div></div></div>
-              <div class="upnext-item"><div class="upnext-thumb" style="background-image:url('assets/cover-puzzle.jpg')" role="img" aria-label="Preview frame for More for You, Son"></div><div class="upnext-body"><div class="upnext-song">More for You, Son</div><div class="upnext-when">Fri, Nov 27 · 7:30 AM PT</div><div class="upnext-plat"><span class="upnext-picon" style="background:#111111" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.6 3c.4 2.2 1.8 3.6 4.1 3.9v3c-1.6 0-3-.5-4.1-1.3v6.6a6.1 6.1 0 1 1-6.1-6.1c.3 0 .7 0 1 .1v3.1a3 3 0 1 0 2 2.9V3h3.1z"/></svg></span>TikTok</div></div></div>
-              <div class="upnext-item"><div class="upnext-thumb" style="background-image:url('assets/cover-puzzle.jpg')" role="img" aria-label="Preview frame for Home Is Her Name"></div><div class="upnext-body"><div class="upnext-song">Home Is Her Name</div><div class="upnext-when">Fri, Nov 27 · 12:30 PM PT</div><div class="upnext-plat"><span class="upnext-picon" style="background:#111111" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.6 3c.4 2.2 1.8 3.6 4.1 3.9v3c-1.6 0-3-.5-4.1-1.3v6.6a6.1 6.1 0 1 1-6.1-6.1c.3 0 .7 0 1 .1v3.1a3 3 0 1 0 2 2.9V3h3.1z"/></svg></span>TikTok</div></div></div>
+              <div class="upnext-item is-pending"><div class="upnext-thumb is-pending" role="img" aria-label="Not decided yet for More for You, Son"><span class="upnext-pending"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Not decided yet</span></span></div><div class="upnext-body"><div class="upnext-song">More for You, Son</div><div class="upnext-when">Fri, Nov 27 · 7:30 AM PT</div><span class="upnext-status">Pending</span><div class="upnext-plat"><span class="upnext-picon" style="background:#111111" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.6 3c.4 2.2 1.8 3.6 4.1 3.9v3c-1.6 0-3-.5-4.1-1.3v6.6a6.1 6.1 0 1 1-6.1-6.1c.3 0 .7 0 1 .1v3.1a3 3 0 1 0 2 2.9V3h3.1z"/></svg></span>TikTok</div></div></div>
+              <div class="upnext-item is-pending"><div class="upnext-thumb is-pending" role="img" aria-label="Not decided yet for Home Is Her Name"><span class="upnext-pending"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Not decided yet</span></span></div><div class="upnext-body"><div class="upnext-song">Home Is Her Name</div><div class="upnext-when">Fri, Nov 27 · 12:30 PM PT</div><span class="upnext-status">Pending</span><div class="upnext-plat"><span class="upnext-picon" style="background:#111111" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.6 3c.4 2.2 1.8 3.6 4.1 3.9v3c-1.6 0-3-.5-4.1-1.3v6.6a6.1 6.1 0 1 1-6.1-6.1c.3 0 .7 0 1 .1v3.1a3 3 0 1 0 2 2.9V3h3.1z"/></svg></span>TikTok</div></div></div>
             </div>
           </div>
         </div>
@@ -1251,10 +1259,6 @@
               <div class="btnrow"><button class="btn small" type="button" data-call="Approve">Approve</button><button class="btn small red-ghost" type="button" data-call="Hold">Hold</button><button class="btn small red-ghost" type="button" data-call="Decline">Decline</button></div>
               <div class="dstate" aria-live="polite"></div>
             </div>
-            <div class="decision-logbar">
-              <p id="decisionSummary"><b>No calls recorded yet.</b> Your Approve, Hold and Decline taps collect here.</p>
-              <div class="btnrow"><button class="btn small ghost" type="button" id="copyDecisions">Copy my calls for Muse</button></div>
-            </div>
             <div class="task" style="margin-top:16px;">
               <div class="tick"></div>
               <div><div class="tt">Accounts Center story-share check</div><div class="td">Task, not a decision · verify story sharing goes to the CCC Facebook Page, not David's personal profile, before the first mirrored story.</div></div>
@@ -1715,6 +1719,14 @@
           if (hay.indexOf('cross-post') !== -1) return { name: 'Instagram · Facebook · YouTube', icon: CROSS_ICON, bg: 'var(--gold)' };
           return { name: 'TikTok', icon: TT_ICON, bg: '#111111' };
         }
+        var PENDING_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
+        function upNextIsDecided(clip) {
+          if (!clip) return false;
+          var stats = (clip.stats || '').toLowerCase();
+          if (stats.indexOf('scheduled') !== -1) return true;
+          if (clip.pin && clip.pin[0] === 'scheduled') return true;
+          return false;
+        }
         function renderUpNext() {
           if (!upNextList) return;
           var nowMs = Date.now();
@@ -1737,11 +1749,21 @@
             var timeShort = (/^\d{1,2}:\d{2}\s(AM|PM)/.exec(u.clip.time) || [u.clip.time])[0];
             var dayName = u.day.date === todayKey ? 'Today, ' + dayShort(u.day) : (u.day.date === tomorrowKey ? 'Tomorrow, ' + dayShort(u.day) : (u.day.dow || '').split(' ')[0] + ', ' + dayShort(u.day));
             var plat = upNextPlatform(u.clip);
-            html += '<button type="button" class="upnext-item" data-dayidx="' + u.dayIdx + '" aria-label="Open ' + u.clip.title + ' in This Week">' +
-              '<span class="upnext-thumb" style="background-image:url(\'' + u.clip.img + '\')" role="img" aria-label="Preview frame for ' + u.clip.title + '">' + (i === 0 ? '<span class="upnext-badge">Next up</span>' : '') + '</span>' +
-              '<span class="upnext-body"><span class="upnext-song">' + u.clip.title + '</span>' +
-              '<span class="upnext-when">' + dayName + ' · ' + timeShort + ' PT</span>' +
-              '<span class="upnext-plat"><span class="upnext-picon" style="background:' + plat.bg + '" aria-hidden="true">' + plat.icon + '</span>' + plat.name + '</span></span></button>';
+            var decided = upNextIsDecided(u.clip);
+            if (decided) {
+              html += '<button type="button" class="upnext-item" data-dayidx="' + u.dayIdx + '" aria-label="Open ' + u.clip.title + ' in This Week">' +
+                '<span class="upnext-thumb" style="background-image:url(\'' + u.clip.img + '\')" role="img" aria-label="Preview frame for ' + u.clip.title + '">' + (i === 0 ? '<span class="upnext-badge">Next up</span>' : '') + '</span>' +
+                '<span class="upnext-body"><span class="upnext-song">' + u.clip.title + '</span>' +
+                '<span class="upnext-when">' + dayName + ' · ' + timeShort + ' PT</span>' +
+                '<span class="upnext-plat"><span class="upnext-picon" style="background:' + plat.bg + '" aria-hidden="true">' + plat.icon + '</span>' + plat.name + '</span></span></button>';
+            } else {
+              html += '<button type="button" class="upnext-item is-pending" data-dayidx="' + u.dayIdx + '" aria-label="Not decided yet: ' + u.clip.title + ' in This Week">' +
+                '<span class="upnext-thumb is-pending" role="img" aria-label="Not decided yet for ' + u.clip.title + '"><span class="upnext-pending">' + PENDING_ICON + '<span>Not decided yet</span></span></span>' +
+                '<span class="upnext-body"><span class="upnext-song">' + u.clip.title + '</span>' +
+                '<span class="upnext-when">' + dayName + ' · ' + timeShort + ' PT</span>' +
+                '<span class="upnext-status">Pending</span>' +
+                '<span class="upnext-plat"><span class="upnext-picon" style="background:' + plat.bg + '" aria-hidden="true">' + plat.icon + '</span>' + plat.name + '</span></span></button>';
+            }
           });
           upNextList.innerHTML = html;
         }
@@ -1917,20 +1939,12 @@
           });
         });
         renderDecidingAs();
-        var calls = {};
-        var summary = document.getElementById('decisionSummary');
-        function renderSummary() {
-          var names = Object.keys(calls);
-          if (!names.length) { summary.innerHTML = '<b>No calls recorded yet.</b> Your Approve, Hold and Decline taps collect here.'; return; }
-          summary.innerHTML = '<b>' + names.length + ' call' + (names.length > 1 ? 's' : '') + ' recorded:</b> ' + names.map(function (n) { return n + ' \u2014 ' + calls[n]; }).join(' \u00B7 ');
-        }
         document.querySelectorAll('.decision').forEach(function (dec) {
           var name = dec.getAttribute('data-decision');
           var state = dec.querySelector('.dstate');
           dec.querySelectorAll('[data-call]').forEach(function (btn) {
             btn.addEventListener('click', function () {
               var call = btn.getAttribute('data-call');
-              calls[name] = call;
               var now = new Intl.DateTimeFormat('en-US', { timeZone: TZ, month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }).format(new Date());
               var isDecline = call === 'Decline';
               var base = (isDecline ? '\u2715 Declined' : (call === 'Approve' ? '\u2713 Approved' : '\u25A0 On hold')) + ' \u00B7 recorded ' + now + ' PT';
@@ -1938,11 +1952,11 @@
                 base + ' \u00B7 Clearing this card from the board \u00B7 Recording to the decision log.' :
                 base + ' \u00B7 Recording to the decision log.';
               var sentText = isDecline ?
-                base + ' \u00B7 Clearing this card from the board \u00B7 The call stays in the decision log. Saved to the decision log.' :
+                base + ' \u00B7 Clearing this card from the board \u00B7 Saved to the decision log.' :
                 base + '. Saved to the decision log.';
               var failedText = isDecline ?
-                base + ' \u00B7 Clearing this card from the board \u00B7 The call stays in the log below. Could not reach the decision log. Use Copy my calls for Muse below so nothing is lost.' :
-                base + '. Could not reach the decision log. Use Copy my calls for Muse below so nothing is lost.';
+                base + ' \u00B7 Clearing this card from the board \u00B7 Could not save to the decision log.' :
+                base + '. Could not save to the decision log.';
               var detailEl = dec.querySelector('.td');
               var detail = detailEl ? detailEl.textContent.replace(/\s+/g, ' ').trim() : '';
               var cardid = dec.getAttribute('id') || '';
@@ -1957,7 +1971,6 @@
               } catch (e) { decisionPost = null; }
               state.textContent = interimText;
               state.className = 'dstate ' + (isDecline ? 'declined' : (call === 'Approve' ? 'approved' : 'held'));
-              renderSummary();
               if (isDecline) {
                 setTimeout(function () { if (dec.parentNode) dec.parentNode.removeChild(dec); }, 1100);
               }
@@ -1968,20 +1981,6 @@
               }
             });
           });
-        });
-        document.getElementById('copyDecisions').addEventListener('click', function () {
-          var names = Object.keys(calls);
-          var text = names.length ?
-            'CCC Dashboard decisions (' + decidingAs + ', from the dashboard):\n' + names.map(function (n) { return '- ' + n + ': ' + calls[n].toUpperCase(); }).join('\n') :
-            'No decisions recorded on the dashboard yet.';
-          var btn = this;
-          function done() { btn.textContent = 'Copied \u2014 paste it to Muse in chat'; setTimeout(function () { btn.textContent = 'Copy my calls for Muse'; }, 2600); }
-          if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(text).then(done, done); }
-          else {
-            var ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select();
-            try { document.execCommand('copy'); } catch (e) {}
-            document.body.removeChild(ta); done();
-          }
         });
       })();
     </script>

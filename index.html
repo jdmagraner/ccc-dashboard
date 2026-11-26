@@ -472,6 +472,18 @@
       .decision-logbar { margin-top: 20px; border: 1px solid var(--line); background: var(--panel-2); padding: 20px 24px; display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; justify-content: space-between; }
       .decision-logbar p { margin: 0; font-size: 14px; color: var(--ink-2); }
       .decision-logbar p b { color: var(--ink); }
+      .deciding-bar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin: 0 0 16px; }
+      .deciding-label { font-family: "IBM Plex Mono", monospace; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+      .deciding-switch { display: inline-flex; padding: 3px; gap: 3px; border: 1px solid var(--line); background: var(--panel); border-radius: 999px; box-shadow: var(--shadow-sm); }
+      .deciding-btn { appearance: none; border: 0; background: transparent; color: var(--muted); font: inherit; font-size: 13px; font-weight: 700; padding: 7px 14px; border-radius: 999px; cursor: pointer; display: inline-flex; align-items: center; gap: 7px; min-height: 36px; line-height: 1; transition: background .15s ease, color .15s ease; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+      .deciding-btn:hover { color: var(--ink); }
+      .deciding-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+      .deciding-btn[data-deciding="Matthew"]:focus-visible { outline-color: var(--red); }
+      .deciding-btn[data-deciding="David"][aria-pressed="true"] { background: var(--gold); color: #161310; }
+      .deciding-btn[data-deciding="Matthew"][aria-pressed="true"] { background: var(--red); color: #fff; }
+      :root[data-theme="light"] .deciding-btn[data-deciding="David"][aria-pressed="true"] { color: #fff; }
+      @media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) .deciding-btn[data-deciding="David"][aria-pressed="true"] { color: #fff; } }
+      @media (prefers-reduced-motion: reduce) { .deciding-btn { transition: none; } }
 
       /* ---------- Running now ---------- */
       .run-grid { display: flex; gap: 20px; overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; scroll-behavior: smooth; padding: 4px 2px 14px; margin: 0 -2px; -webkit-overflow-scrolling: touch; scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
@@ -1189,6 +1201,13 @@
       <!-- DECISIONS -->
       <section id="decisions">
         <div class="sec-head"><h2>On the Board</h2><span class="note">Tap Approve, Hold or Decline</span></div>
+        <div class="deciding-bar">
+          <span class="deciding-label" id="decidingAsLabel">Deciding as</span>
+          <div class="deciding-switch" role="group" aria-labelledby="decidingAsLabel">
+            <button class="deciding-btn" type="button" data-deciding="David" aria-pressed="true">David</button>
+            <button class="deciding-btn" type="button" data-deciding="Matthew" aria-pressed="false">Matthew</button>
+          </div>
+        </div>
         <div class="split">
           <div class="box">
             <h3>Open decisions</h3>
@@ -1780,6 +1799,28 @@
         renderSongs();
 
         /* ---------- Decisions ---------- */
+        var DECISION_BRIDGE_URL = 'https://script.google.com/macros/s/AKfycbwYusBuwV2EiiOaqi1GFrYjNqYQhheND2XeQgmLqiAuKcQeBbcYRvgKrwnA7H0n56XfeA/exec';
+        var decidingAs = 'David';
+        try {
+          var savedDecidingAs = window.localStorage.getItem('ccc-deciding-as');
+          if (savedDecidingAs === 'David' || savedDecidingAs === 'Matthew') decidingAs = savedDecidingAs;
+        } catch (e) {}
+        var decidingBtns = document.querySelectorAll('.deciding-btn');
+        function renderDecidingAs() {
+          decidingBtns.forEach(function (b) {
+            b.setAttribute('aria-pressed', b.getAttribute('data-deciding') === decidingAs ? 'true' : 'false');
+          });
+        }
+        decidingBtns.forEach(function (b) {
+          b.addEventListener('click', function () {
+            var choice = b.getAttribute('data-deciding');
+            if (choice !== 'David' && choice !== 'Matthew') return;
+            decidingAs = choice;
+            try { window.localStorage.setItem('ccc-deciding-as', decidingAs); } catch (e) {}
+            renderDecidingAs();
+          });
+        });
+        renderDecidingAs();
         var calls = {};
         var summary = document.getElementById('decisionSummary');
         function renderSummary() {
@@ -1795,23 +1836,47 @@
               var call = btn.getAttribute('data-call');
               calls[name] = call;
               var now = new Intl.DateTimeFormat('en-US', { timeZone: TZ, month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }).format(new Date());
-              if (call === 'Decline') {
-                state.textContent = '\u2715 Declined \u00B7 recorded ' + now + ' PT. Clearing this card from the board \u2014 the call stays in the log below.';
-                state.className = 'dstate declined';
-                renderSummary();
-                setTimeout(function () { if (dec.parentNode) dec.parentNode.removeChild(dec); }, 1100);
-                return;
-              }
-              state.textContent = (call === 'Approve' ? '\u2713 Approved' : '\u25A0 On hold') + ' \u00B7 recorded ' + now + ' PT. Send it to Muse below so it lands in the log.';
-              state.className = 'dstate ' + (call === 'Approve' ? 'approved' : 'held');
+              var isDecline = call === 'Decline';
+              var base = (isDecline ? '\u2715 Declined' : (call === 'Approve' ? '\u2713 Approved' : '\u25A0 On hold')) + ' \u00B7 recorded ' + now + ' PT';
+              var interimText = isDecline ?
+                base + ' \u00B7 Clearing this card from the board \u00B7 Recording to the decision log.' :
+                base + ' \u00B7 Recording to the decision log.';
+              var sentText = isDecline ?
+                base + ' \u00B7 Clearing this card from the board \u00B7 The call stays in the decision log. Saved to the decision log.' :
+                base + '. Saved to the decision log.';
+              var failedText = isDecline ?
+                base + ' \u00B7 Clearing this card from the board \u00B7 The call stays in the log below. Could not reach the decision log. Use Copy my calls for Muse below so nothing is lost.' :
+                base + '. Could not reach the decision log. Use Copy my calls for Muse below so nothing is lost.';
+              var detailEl = dec.querySelector('.td');
+              var detail = detailEl ? detailEl.textContent.replace(/\s+/g, ' ').trim() : '';
+              var cardid = dec.getAttribute('id') || '';
+              var decisionPost = null;
+              try {
+                decisionPost = fetch(DECISION_BRIDGE_URL, {
+                  method: 'POST',
+                  mode: 'no-cors',
+                  headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                  body: new URLSearchParams({ action: 'decision', who: decidingAs, card: name, detail: detail, decision: call, cardid: cardid })
+                });
+              } catch (e) { decisionPost = null; }
+              state.textContent = interimText;
+              state.className = 'dstate ' + (isDecline ? 'declined' : (call === 'Approve' ? 'approved' : 'held'));
               renderSummary();
+              if (isDecline) {
+                setTimeout(function () { if (dec.parentNode) dec.parentNode.removeChild(dec); }, 1100);
+              }
+              if (decisionPost && decisionPost.then) {
+                decisionPost.then(function () { state.textContent = sentText; }, function () { state.textContent = failedText; });
+              } else {
+                state.textContent = failedText;
+              }
             });
           });
         });
         document.getElementById('copyDecisions').addEventListener('click', function () {
           var names = Object.keys(calls);
           var text = names.length ?
-            'CCC Dashboard decisions (David, from the dashboard):\n' + names.map(function (n) { return '- ' + n + ': ' + calls[n].toUpperCase(); }).join('\n') :
+            'CCC Dashboard decisions (' + decidingAs + ', from the dashboard):\n' + names.map(function (n) { return '- ' + n + ': ' + calls[n].toUpperCase(); }).join('\n') :
             'No decisions recorded on the dashboard yet.';
           var btn = this;
           function done() { btn.textContent = 'Copied \u2014 paste it to Muse in chat'; setTimeout(function () { btn.textContent = 'Copy my calls for Muse'; }, 2600); }

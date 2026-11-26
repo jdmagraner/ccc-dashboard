@@ -201,6 +201,34 @@
       .cd .cd-num { font-family: "IBM Plex Mono", monospace; font-size: 26px; font-weight: 600; }
       .cd .cd-lbl { font-weight: 700; font-size: 14px; margin-top: 2px; }
       .cd .cd-sub { color: var(--muted); font-size: 12.5px; }
+      /* ---------- Coming up next (wide card in the countdown row) ---------- */
+      .cd.upnext { grid-column: span 2; display: flex; flex-direction: column; }
+      .upnext-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px 14px; flex-wrap: wrap; margin-bottom: 14px; }
+      .upnext-head .cd-lbl { font-family: "Sora", sans-serif; font-size: 19px; font-weight: 800; margin-top: 0; }
+      .upnext-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+      .upnext-item { appearance: none; font: inherit; color: inherit; text-align: left; border: 1px solid var(--line-soft); background: var(--panel-2); border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; min-width: 0; padding: 0; cursor: pointer; transition: border-color .15s ease, transform .15s ease; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+      .upnext-item:hover, .upnext-item:focus-visible { border-color: var(--tone); transform: translateY(-1px); }
+      .upnext-item:focus-visible { outline: 2px solid var(--tone); outline-offset: 2px; }
+      .upnext-thumb { height: 96px; background-size: cover; background-position: center; background-color: var(--panel); position: relative; flex: none; }
+      .upnext-badge { position: absolute; left: 10px; top: 10px; font-size: 11px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; padding: 3px 9px; border-radius: 999px; background: var(--gold); color: #161310; }
+      :root[data-theme="light"] .upnext-badge { color: #fff; }
+      @media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) .upnext-badge { color: #fff; } }
+      .upnext-body { padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+      .upnext-song { font-family: "Sora", sans-serif; font-weight: 700; font-size: 14.5px; line-height: 1.3; }
+      .upnext-when { font-family: "IBM Plex Mono", monospace; font-size: 12px; color: var(--tone); font-weight: 600; }
+      .upnext-plat { display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; color: var(--muted); font-weight: 700; }
+      .upnext-picon { width: 21px; height: 21px; border-radius: 6px; color: #fff; display: inline-flex; align-items: center; justify-content: center; flex: none; }
+      .upnext-picon svg { width: 12px; height: 12px; display: block; }
+      .upnext-empty { grid-column: 1 / -1; color: var(--muted); font-size: 13.5px; border: 1px dashed var(--line); border-radius: 12px; padding: 16px 18px; background: var(--panel-2); }
+      @media (max-width: 1020px) { .upnext-thumb { height: 78px; } }
+      @media (max-width: 720px) {
+        .cd.upnext { grid-column: auto; }
+        .upnext-list { grid-template-columns: 1fr; }
+        .upnext-item { flex-direction: row; align-items: stretch; }
+        .upnext-thumb { width: 86px; height: auto; min-height: 92px; }
+        .upnext-body { justify-content: center; }
+      }
+      @media (prefers-reduced-motion: reduce) { .upnext-item { transition: none; } .upnext-item:hover { transform: none; } }
       .snapshot-note { margin-top: 20px; font-size: 13px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 6px 16px; }
       .snapshot-note b { color: var(--ink-2); }
       .chart-card { margin-top: 20px; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow-sm); padding: 28px; }
@@ -720,8 +748,14 @@
         </div>
         <div class="countdowns" id="liveCountdowns">
           <div class="cd"><div class="cd-num" id="cdNextPost">--:--:--</div><div class="cd-lbl" id="cdNextPostLbl">To the next post slot</div><div class="cd-sub" id="cdNextPostSub">7:30 AM · 12:30 PM · 7:30 PM PT</div></div>
-          <div class="cd red"><div class="cd-num" id="cdWinner">--</div><div class="cd-lbl" id="cdWinnerLbl">To the first winner pick</div><div class="cd-sub" id="cdWinnerSub">Fri Nov 27, 9 AM PT</div></div>
-          <div class="cd"><div class="cd-num" id="cdCrossSong" style="font-size:21px;">Cross-post status</div><div class="cd-lbl" id="cdCrossLbl">Most recent cross-post</div><div class="cd-sub" id="cdCrossPlats">Checking the board…</div><div class="cd-sub" id="cdCrossNext"></div></div>
+          <div class="cd upnext" id="upNextCard">
+            <div class="upnext-head"><div class="cd-lbl">Coming up next</div><div class="cd-sub">The next posts on the schedule, soonest first</div></div>
+            <div class="upnext-list" id="upNextList">
+              <div class="upnext-item"><div class="upnext-thumb" style="background-image:url('assets/cover-silhouette.jpg')" role="img" aria-label="Preview frame for Four Quarters (Closer Than A Brother)"><span class="upnext-badge">Next up</span></div><div class="upnext-body"><div class="upnext-song">Four Quarters (Closer Than A Brother)</div><div class="upnext-when">Thu, Nov 26 · 7:30 PM PT</div><div class="upnext-plat"><span class="upnext-picon" style="background:#111111" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.6 3c.4 2.2 1.8 3.6 4.1 3.9v3c-1.6 0-3-.5-4.1-1.3v6.6a6.1 6.1 0 1 1-6.1-6.1c.3 0 .7 0 1 .1v3.1a3 3 0 1 0 2 2.9V3h3.1z"/></svg></span>TikTok</div></div></div>
+              <div class="upnext-item"><div class="upnext-thumb" style="background-image:url('assets/cover-puzzle.jpg')" role="img" aria-label="Preview frame for More for You, Son"></div><div class="upnext-body"><div class="upnext-song">More for You, Son</div><div class="upnext-when">Fri, Nov 27 · 7:30 AM PT</div><div class="upnext-plat"><span class="upnext-picon" style="background:#111111" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.6 3c.4 2.2 1.8 3.6 4.1 3.9v3c-1.6 0-3-.5-4.1-1.3v6.6a6.1 6.1 0 1 1-6.1-6.1c.3 0 .7 0 1 .1v3.1a3 3 0 1 0 2 2.9V3h3.1z"/></svg></span>TikTok</div></div></div>
+              <div class="upnext-item"><div class="upnext-thumb" style="background-image:url('assets/cover-puzzle.jpg')" role="img" aria-label="Preview frame for Home Is Her Name"></div><div class="upnext-body"><div class="upnext-song">Home Is Her Name</div><div class="upnext-when">Fri, Nov 27 · 12:30 PM PT</div><div class="upnext-plat"><span class="upnext-picon" style="background:#111111" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.6 3c.4 2.2 1.8 3.6 4.1 3.9v3c-1.6 0-3-.5-4.1-1.3v6.6a6.1 6.1 0 1 1-6.1-6.1c.3 0 .7 0 1 .1v3.1a3 3 0 1 0 2 2.9V3h3.1z"/></svg></span>TikTok</div></div></div>
+            </div>
+          </div>
         </div>
         
         <div class="chart-card" id="liveChart">
@@ -1666,6 +1700,68 @@
         }
         updateNextPostPill();
         setInterval(updateNextPostPill, 60000);
+
+        /* ---------- Coming up next (Overview wide card) ---------- */
+        // Built from the same DAYS schedule as the week board and the
+        // next-post pill: the next three clips whose slot is still ahead,
+        // soonest first, each with its cover frame, platform, day and time.
+        // Recomputed on load and on a minute tick, so it stays right as
+        // slots pass and days roll over.
+        var upNextList = document.getElementById('upNextList');
+        var TT_ICON = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.6 3c.4 2.2 1.8 3.6 4.1 3.9v3c-1.6 0-3-.5-4.1-1.3v6.6a6.1 6.1 0 1 1-6.1-6.1c.3 0 .7 0 1 .1v3.1a3 3 0 1 0 2 2.9V3h3.1z"/></svg>';
+        var CROSS_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2 11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>';
+        function upNextPlatform(clip) {
+          var hay = ((clip.time || '') + ' ' + (clip.vibe || '')).toLowerCase();
+          if (hay.indexOf('cross-post') !== -1) return { name: 'Instagram · Facebook · YouTube', icon: CROSS_ICON, bg: 'var(--gold)' };
+          return { name: 'TikTok', icon: TT_ICON, bg: '#111111' };
+        }
+        function renderUpNext() {
+          if (!upNextList) return;
+          var nowMs = Date.now();
+          var upcoming = [];
+          for (var di = 0; di < DAYS.length; di++) {
+            for (var ci = 0; ci < DAYS[di].clips.length; ci++) {
+              var at = clipStartMs(DAYS[di], DAYS[di].clips[ci]);
+              if (at !== null && at > nowMs) upcoming.push({ dayIdx: di, day: DAYS[di], clip: DAYS[di].clips[ci], at: at });
+            }
+          }
+          upcoming.sort(function (a, b) { return a.at - b.at; });
+          upcoming = upcoming.slice(0, 3);
+          if (!upcoming.length) {
+            upNextList.innerHTML = '<div class="upnext-empty">Week 1 posts are all out. The next schedule shows up here as soon as it is set.</div>';
+            return;
+          }
+          var tomorrowKey = fmtKey.format(new Date(nowMs + 86400000));
+          var html = '';
+          upcoming.forEach(function (u, i) {
+            var timeShort = (/^\d{1,2}:\d{2}\s(AM|PM)/.exec(u.clip.time) || [u.clip.time])[0];
+            var dayName = u.day.date === todayKey ? 'Today, ' + dayShort(u.day) : (u.day.date === tomorrowKey ? 'Tomorrow, ' + dayShort(u.day) : (u.day.dow || '').split(' ')[0] + ', ' + dayShort(u.day));
+            var plat = upNextPlatform(u.clip);
+            html += '<button type="button" class="upnext-item" data-dayidx="' + u.dayIdx + '" aria-label="Open ' + u.clip.title + ' in This Week">' +
+              '<span class="upnext-thumb" style="background-image:url(\'' + u.clip.img + '\')" role="img" aria-label="Preview frame for ' + u.clip.title + '">' + (i === 0 ? '<span class="upnext-badge">Next up</span>' : '') + '</span>' +
+              '<span class="upnext-body"><span class="upnext-song">' + u.clip.title + '</span>' +
+              '<span class="upnext-when">' + dayName + ' · ' + timeShort + ' PT</span>' +
+              '<span class="upnext-plat"><span class="upnext-picon" style="background:' + plat.bg + '" aria-hidden="true">' + plat.icon + '</span>' + plat.name + '</span></span></button>';
+          });
+          upNextList.innerHTML = html;
+        }
+        renderUpNext();
+        setInterval(renderUpNext, 60000);
+        if (upNextList) {
+          upNextList.addEventListener('click', function (ev) {
+            var item = ev.target.closest ? ev.target.closest('.upnext-item') : null;
+            if (!item || !item.getAttribute('data-dayidx')) return;
+            var idx = parseInt(item.getAttribute('data-dayidx'), 10);
+            var tab = document.querySelector('.tabbtn[data-tab="week"]');
+            if (tab && tab.getAttribute('aria-selected') !== 'true') tab.click();
+            setTimeout(function () {
+              if (openIdx !== idx) openDay(idx, weekGrid.querySelectorAll('.day')[idx], true);
+              var target = document.getElementById('dayDetail');
+              if (!target || target.hidden) target = document.getElementById('week');
+              if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 120);
+          });
+        }
         if (nextPostPill) {
           nextPostPill.addEventListener('click', function () {
             var tab = document.querySelector('.tabbtn[data-tab="week"]');
